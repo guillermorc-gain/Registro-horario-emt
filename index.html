@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Horas Realizadas</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0052CC">
+    <meta name="description" content="Control de horas de trabajo - EMT">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Horas Realizadas">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            height: 100vh;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 0;
+        }
+
+        /* PANTALLA DE AUTENTICACIÓN */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .auth-screen.hidden {
+            display: none;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+        }
+
+        .auth-title {
+            text-align: center;
+        }
+
+        .auth-title h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .auth-title p {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .auth-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .auth-form input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .auth-form input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #f8fbff;
+        }
+
+        .auth-form button {
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .auth-form button:active {
+            opacity: 0.9;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .auth-toggle button {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0;
+            text-decoration: underline;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            font-size: 12px;
+            padding: 10px;
+            background: #fadbd8;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        /* PANTALLA DE LA APP */
+        .app-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .app-screen.active {
+            display: flex;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .app-header h1 {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+
+        .app-header p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .app-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-date {
+            text-align: center;
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .progress-container {
+            flex-shrink: 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .progress-text span {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            flex-shrink: 0;
+        }
+
+        .input-section label {
+            display: block;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .input-section input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+
+        .input-section input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-section button {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            margin-bottom: 8px;
+        }
+
+        .input-section button:active {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6 !important;
+        }
+
+        .historial-section {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .historial-section h3 {
+            color: #34495e;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .historial-list {
+            list-style: none;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 6px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            flex: 1;
+        }
+
+        .historial-list li {
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+        }
+
+        .historial-list li:last-child {
+            border-bottom: none;
+        }
+
+        .historial-fecha {
+            color: #7f8c8d;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .historial-horas {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #95a5a6;
+            padding: 20px 10px;
+            font-size: 12px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+            flex-shrink: 0;
+            margin-top: 10px;
+        }
+
+        .logout-btn:active {
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-size: 12px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        @media (max-height: 667px) {
+            .auth-screen {
+                padding: 15px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            .stat-value {
+                font-size: 22px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PANTALLA DE AUTENTICACIÓN -->
+        <div class="auth-screen" id="authScreen">
+            <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="55" fill="none" stroke="#0052CC" stroke-width="3"/>
+                <circle cx="60" cy="60" r="48" fill="#E8F0FF"/>
+                <circle cx="60" cy="60" r="40" fill="none" stroke="#0052CC" stroke-width="2" opacity="0.3"/>
+                <line x1="60" y1="25" x2="60" y2="35" stroke="#0052CC" stroke-width="2"/>
+                <line x1="85" y1="60" x2="95" y2="60" stroke="#0052CC" stroke-width="2"/>
+                <line x1="60" y1="60" x2="60" y2="42" stroke="#0052CC" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="60" y1="60" x2="72" y2="60" stroke="#0052CC" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="60" cy="60" r="4" fill="#0052CC"/>
+                <text x="60" y="108" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="#0052CC">EMT</text>
+            </svg>
+
+            <div class="auth-title">
+                <h1>Horas Realizadas</h1>
+                <p>Control de horas EMT</p>
+            </div>
+
+            <div id="authError" class="error-msg"></div>
+
+            <div class="auth-form" id="loginForm">
+                <h2 style="color: #2c3e50; text-align: center; font-size: 14px; margin-bottom: 10px;">Iniciar Sesión</h2>
+                <input type="email" id="loginEmail" placeholder="Correo" autocomplete="email">
+                <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password">
+                <button onclick="login()">Iniciar Sesión</button>
+                <div class="auth-toggle">
+                    ¿Sin cuenta? <button onclick="toggleAuth()">Regístrate</button>
+                </div>
+            </div>
+
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <h2 style="color: #2c3e50; text-align: center; font-size: 14px; margin-bottom: 10px;">Registrarse</h2>
+                <input type="email" id="registerEmail" placeholder="Correo" autocomplete="email">
+                <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6)" autocomplete="new-password">
+                <input type="password" id="registerPassword2" placeholder="Confirmar contraseña" autocomplete="new-password">
+                <button onclick="register()">Crear Cuenta</button>
+                <div class="auth-toggle">
+                    ¿Ya tienes cuenta? <button onclick="toggleAuth()">Inicia sesión</button>
+                </div>
+            </div>
+
+            <div id="registerSuccess" class="error-msg" style="background: #d5f4e6; color: #27ae60;">
+                ✓ Verifica tu correo para activar la cuenta
+            </div>
+        </div>
+
+        <!-- PANTALLA DE LA APP -->
+        <div class="app-screen" id="appScreen">
+            <div class="app-header">
+                <h1>Horas Realizadas</h1>
+                <p id="userEmail"></p>
+            </div>
+
+            <div class="app-content">
+                <div class="info-date" id="fechaHoy"></div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Restantes</div>
+                        <div class="stat-value" id="horasRestantes">777</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Trabajadas</div>
+                        <div class="stat-value" id="horasTrabajadas">0</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="porcentaje">0</span>% completado
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <label for="fechaInput">Fecha:</label>
+                    <input type="date" id="fechaInput">
+                    <label for="horasInput">Horas:</label>
+                    <input type="number" id="horasInput" min="0" step="0.5" placeholder="8, 4.5...">
+                    <button onclick="registrarHoras()">Registrar</button>
+                    <button class="btn-secondary" onclick="limpiarInput()">Limpiar</button>
+                </div>
+
+                <div class="historial-section">
+                    <h3>Últimas jornadas</h3>
+                    <ul class="historial-list" id="historialList">
+                        <li class="empty-state">Sin registros</li>
+                    </ul>
+                </div>
+
+                <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyASahJ35qdFI9uc4JSj1IG7q85k9La--WE",
+            authDomain: "horas-realizadas-emt.firebaseapp.com",
+            projectId: "horas-realizadas-emt",
+            storageBucket: "horas-realizadas-emt.firebasestorage.app",
+            messagingSenderId: "370563787836",
+            appId: "1:370563787836:web:4e93015a2e28c48646a739"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        const HORAS_ANUALES = 777;
+
+        let currentUser = null;
+
+        // Elementos del DOM
+        const authScreen = document.getElementById('authScreen');
+        const appScreen = document.getElementById('appScreen');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authError = document.getElementById('authError');
+        const registerSuccess = document.getElementById('registerSuccess');
+
+        const userEmailEl = document.getElementById('userEmail');
+        const horasRestantesEl = document.getElementById('horasRestantes');
+        const horasTrabajadasEl = document.getElementById('horasTrabajadas');
+        const fechaInput = document.getElementById('fechaInput');
+        const horasInput = document.getElementById('horasInput');
+        const progressFill = document.getElementById('progressFill');
+        const porcentaje = document.getElementById('porcentaje');
+        const historialList = document.getElementById('historialList');
+        const fechaHoyEl = document.getElementById('fechaHoy');
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            establecerFechaHoy();
+            actualizarFecha();
+            
+            auth.onAuthStateChanged((user) => {
+                if (user && user.emailVerified) {
+                    currentUser = user;
+                    mostrarApp();
+                    cargarDatos();
+                    userEmailEl.textContent = user.email;
+                } else if (user) {
+                    mostrarMensaje('Verifica tu correo para continuar', authError);
+                    logout();
+                } else {
+                    mostrarAuth();
+                }
+            });
+        });
+
+        function establecerFechaHoy() {
+            const hoy = new Date();
+            const año = hoy.getFullYear();
+            const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+            const día = String(hoy.getDate()).padStart(2, '0');
+            fechaInput.value = `${año}-${mes}-${día}`;
+            fechaInput.max = `${año}-${mes}-${día}`;
+        }
+
+        function actualizarFecha() {
+            const ahora = new Date();
+            const opciones = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            const fechaFormato = ahora.toLocaleDateString('es-ES', opciones);
+            fechaHoyEl.textContent = `📅 ${fechaFormato}`;
+        }
+
+        function toggleAuth() {
+            loginForm.style.display = loginForm.style.display === 'none' ? 'flex' : 'none';
+            registerForm.style.display = registerForm.style.display === 'none' ? 'flex' : 'none';
+            registerSuccess.style.display = 'none';
+            authError.classList.remove('show');
+        }
+
+        function mostrarMensaje(msg, elemento) {
+            elemento.textContent = msg;
+            elemento.classList.add('show');
+            setTimeout(() => elemento.classList.remove('show'), 5000);
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                mostrarMensaje('Completa todos los campos', authError);
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => {
+                    mostrarMensaje('Error: ' + error.message, authError);
+                });
+        }
+
+        function register() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const password2 = document.getElementById('registerPassword2').value;
+
+            if (!email || !password || !password2) {
+                mostrarMensaje('Completa todos los campos', authError);
+                return;
+            }
+
+            if (password !== password2) {
+                mostrarMensaje('Las contraseñas no coinciden', authError);
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarMensaje('Mínimo 6 caracteres', authError);
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    userCredential.user.sendEmailVerification();
+                    registerSuccess.style.display = 'block';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerPassword2').value = '';
+                })
+                .catch((error) => {
+                    mostrarMensaje('Error: ' + error.message, authError);
+                });
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        function mostrarAuth() {
+            authScreen.classList.remove('hidden');
+            appScreen.classList.remove('active');
+        }
+
+        function mostrarApp() {
+            authScreen.classList.add('hidden');
+            appScreen.classList.add('active');
+        }
+
+        function cargarDatos() {
+            if (!currentUser) return;
+
+            db.ref('usuarios/' + currentUser.uid).on('value', (snapshot) => {
+                const data = snapshot.val() || {
+                    horasTrabajadas: 0,
+                    historial: {}
+                };
+
+                actualizarUI(data);
+            });
+        }
+
+        function registrarHoras() {
+            if (!currentUser) return;
+
+            const horas = parseFloat(horasInput.value);
+            const fecha = fechaInput.value;
+
+            if (!fecha || !horasInput.value || isNaN(horas) || horas <= 0) {
+                mostrarMensaje('Datos inválidos', authError);
+                return;
+            }
+
+            db.ref('usuarios/' + currentUser.uid).once('value', (snapshot) => {
+                const data = snapshot.val() || {
+                    horasTrabajadas: 0,
+                    historial: {}
+                };
+
+                if (data.horasTrabajadas + horas > HORAS_ANUALES) {
+                    const disponibles = HORAS_ANUALES - data.horasTrabajadas;
+                    mostrarMensaje(`Solo tienes ${disponibles.toFixed(1)} horas disponibles`, authError);
+                    return;
+                }
+
+                data.horasTrabajadas = Math.round((data.horasTrabajadas + horas) * 10) / 10;
+
+                const fechaObj = new Date(fecha);
+                const fechaFormato = fechaObj.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+
+                const registroId = fecha.replace(/-/g, '');
+                if (!data.historial) data.historial = {};
+                data.historial[registroId] = {
+                    fecha: fechaFormato,
+                    horas: horas,
+                    timestamp: new Date(fecha).getTime()
+                };
+
+                db.ref('usuarios/' + currentUser.uid).set(data);
+
+                horasInput.value = '';
+                establecerFechaHoy();
+            });
+        }
+
+        function limpiarInput() {
+            horasInput.value = '';
+            establecerFechaHoy();
+        }
+
+        function actualizarUI(datos) {
+            const horasRestantes = Math.max(0, HORAS_ANUALES - datos.horasTrabajadas);
+            const porcentajeCompleto = (datos.horasTrabajadas / HORAS_ANUALES) * 100;
+
+            horasTrabajadasEl.textContent = datos.horasTrabajadas.toFixed(1);
+            horasRestantesEl.textContent = horasRestantes.toFixed(1);
+            porcentaje.textContent = Math.min(Math.round(porcentajeCompleto), 100);
+
+            progressFill.style.width = Math.min(porcentajeCompleto, 100) + '%';
+
+            if (porcentajeCompleto >= 100) {
+                progressFill.style.background = 'linear-gradient(90deg, #27ae60 0%, #229954 100%)';
+            } else {
+                progressFill.style.background = 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)';
+            }
+
+            actualizarHistorial(datos.historial || {});
+        }
+
+        function actualizarHistorial(historial) {
+            historialList.innerHTML = '';
+
+            const registros = Object.values(historial).sort((a, b) => b.timestamp - a.timestamp);
+
+            if (registros.length === 0) {
+                historialList.innerHTML = '<li class="empty-state">Sin registros</li>';
+                return;
+            }
+
+            registros.forEach((reg) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="historial-fecha">${reg.fecha}</span>
+                    <span class="historial-horas">${reg.horas}h</span>
+                `;
+                historialList.appendChild(li);
+            });
+        }
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+            });
+        }
+    </script>
+</body>
+</html>

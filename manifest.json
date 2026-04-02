@@ -1,0 +1,43 @@
+{
+  "name": "Horas Realizadas",
+  "short_name": "Horas",
+  "description": "Control de horas de trabajo EMT",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0052CC",
+  "dir": "ltr",
+  "lang": "es",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect fill='%23E8F0FF' width='192' height='192'/%3E%3Ccircle cx='96' cy='96' r='85' fill='none' stroke='%230052CC' stroke-width='5'/%3E%3Ccircle cx='96' cy='96' r='75' fill='%230052CC' opacity='0.1'/%3E%3Cline x1='96' y1='40' x2='96' y2='60' stroke='%230052CC' stroke-width='4'/%3E%3Cline x1='152' y1='96' x2='172' y2='96' stroke='%230052CC' stroke-width='4'/%3E%3Cline x1='96' y1='96' x2='96' y2='65' stroke='%230052CC' stroke-width='5' stroke-linecap='round'/%3E%3Cline x1='96' y1='96' x2='125' y2='96' stroke='%230052CC' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='96' cy='96' r='7' fill='%230052CC'/%3E%3Ctext x='96' y='165' font-family='Arial' font-size='32' font-weight='bold' text-anchor='middle' fill='%230052CC'%3EEMT%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect fill='%23E8F0FF' width='512' height='512'/%3E%3Ccircle cx='256' cy='256' r='228' fill='none' stroke='%230052CC' stroke-width='12'/%3E%3Ccircle cx='256' cy='256' r='200' fill='%230052CC' opacity='0.1'/%3E%3Cline x1='256' y1='80' x2='256' y2='130' stroke='%230052CC' stroke-width='10'/%3E%3Cline x1='406' y1='256' x2='456' y2='256' stroke='%230052CC' stroke-width='10'/%3E%3Cline x1='256' y1='256' x2='256' y2='140' stroke='%230052CC' stroke-width='12' stroke-linecap='round'/%3E%3Cline x1='256' y1='256' x2='336' y2='256' stroke='%230052CC' stroke-width='12' stroke-linecap='round'/%3E%3Ccircle cx='256' cy='256' r='18' fill='%230052CC'/%3E%3Ctext x='256' y='440' font-family='Arial' font-size='85' font-weight='bold' text-anchor='middle' fill='%230052CC'%3EEMT%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'%3E%3Crect fill='%23ffffff' width='540' height='720'/%3E%3Crect fill='%23667eea' width='540' height='100'/%3E%3Ctext x='270' y='60' font-family='Arial' font-size='32' font-weight='bold' text-anchor='middle' fill='white'%3EHoras Realizadas%3C/text%3E%3Ccircle cx='270' cy='200' r='60' fill='none' stroke='%230052CC' stroke-width='3'/%3E%3Crect x='50' y='300' width='440' height='80' fill='%23667eea' opacity='0.2' rx='8'/%3E%3Ctext x='270' y='345' font-family='Arial' font-size='24' text-anchor='middle' fill='%232c3e50'%3E777 horas restantes%3C/text%3E%3Crect x='50' y='420' width='440' height='60' fill='%23f8f9fa' stroke='%23e0e0e0' rx='8'/%3E%3Ctext x='270' y='455' font-family='Arial' font-size='14' text-anchor='middle' fill='%237f8c8d'%3ERegistra tus horas de trabajo%3C/text%3E%3C/svg%3E",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect fill='%23ffffff' width='1280' height='720'/%3E%3Crect fill='%23667eea' width='1280' height='100'/%3E%3Ctext x='640' y='60' font-family='Arial' font-size='48' font-weight='bold' text-anchor='middle' fill='white'%3EHoras Realizadas - EMT%3C/text%3E%3Crect x='100' y='150' width='500' height='500' fill='%23f8f9fa' stroke='%23e0e0e0' stroke-width='2' rx='12'/%3E%3Ctext x='350' y='200' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%232c3e50'%3ERestantes: 777h%3C/text%3E%3Crect x='680' y='150' width='500' height='500' fill='%23f8f9fa' stroke='%23e0e0e0' stroke-width='2' rx='12'/%3E%3Ctext x='930' y='200' font-family='Arial' font-size='20' font-weight='bold' text-anchor='middle' fill='%232c3e50'%3ETrabajadas: 0h%3C/text%3E%3C/svg%3E",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ]
+}

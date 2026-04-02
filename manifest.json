@@ -1,0 +1,44 @@
+{
+  "name": "Horas Realizadas",
+  "short_name": "Horas",
+  "description": "Control de horas de trabajo EMT",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0052CC",
+  "dir": "ltr",
+  "lang": "es",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23E8F0FF' width='192' height='192'/><circle cx='96' cy='96' r='85' fill='none' stroke='%230052CC' stroke-width='5'/><circle cx='96' cy='96' r='75' fill='%230052CC' opacity='0.1'/><line x1='96' y1='40' x2='96' y2='60' stroke='%230052CC' stroke-width='4'/><line x1='152' y1='96' x2='172' y2='96' stroke='%230052CC' stroke-width='4'/><line x1='96' y1='96' x2='96' y2='65' stroke='%230052CC' stroke-width='5' stroke-linecap='round'/><line x1='96' y1='96' x2='125' y2='96' stroke='%230052CC' stroke-width='5' stroke-linecap='round'/><circle cx='96' cy='96' r='7' fill='%230052CC'/><text x='96' y='165' font-family='Arial' font-size='32' font-weight='bold' text-anchor='middle' fill='%230052CC'>EMT</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%23E8F0FF' width='512' height='512'/><circle cx='256' cy='256' r='228' fill='none' stroke='%230052CC' stroke-width='12'/><circle cx='256' cy='256' r='200' fill='%230052CC' opacity='0.1'/><line x1='256' y1='80' x2='256' y2='130' stroke='%230052CC' stroke-width='10'/><line x1='406' y1='256' x2='456' y2='256' stroke='%230052CC' stroke-width='10'/><line x1='256' y1='256' x2='256' y2='140' stroke='%230052CC' stroke-width='12' stroke-linecap='round'/><line x1='256' y1='256' x2='336' y2='256' stroke='%230052CC' stroke-width='12' stroke-linecap='round'/><circle cx='256' cy='256' r='18' fill='%230052CC'/><text x='256' y='440' font-family='Arial' font-size='85' font-weight='bold' text-anchor='middle' fill='%230052CC'>EMT</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity"],
+  "shortcuts": [
+    {
+      "name": "Registrar Horas",
+      "short_name": "Registrar",
+      "description": "Registra tus horas de trabajo",
+      "url": "/?action=register",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='45' fill='%230052CC'/><text x='48' y='55' font-family='Arial' font-size='48' font-weight='bold' text-anchor='middle' fill='white'>+</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}

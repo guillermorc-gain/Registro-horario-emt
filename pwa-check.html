@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA Check</title>
+<style>
+  body { font-family: monospace; background: #0a0a0a; color: #00ff88; padding: 16px; font-size: 13px; }
+  h1 { color: #fff; font-size: 16px; margin-bottom: 16px; }
+  .check { background: #111; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #333; }
+  .ok { border-left-color: #00ff88; }
+  .fail { border-left-color: #ff4444; color: #ff8888; }
+  .warn { border-left-color: #ffaa00; color: #ffcc44; }
+  .label { color: #888; font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+  .val { word-break: break-all; }
+  button { background: #003A99; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; cursor: pointer; width: 100%; margin-top: 8px; }
+  #log { background: #111; border-radius: 8px; padding: 12px; margin-top: 16px; font-size: 11px; color: #aaa; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔍 Diagnóstico PWA</h1>
+<div id="results"></div>
+<button onclick="checkAll()">🔄 Repetir checks</button>
+<div id="log"></div>
+
+<script>
+const results = document.getElementById('results');
+const log = document.getElementById('log');
+let logs = [];
+
+function addLog(msg) {
+  logs.push(new Date().toLocaleTimeString() + ' — ' + msg);
+  log.textContent = logs.join('\n');
+}
+
+function check(label, value, status, detail) {
+  const div = document.createElement('div');
+  div.className = 'check ' + status;
+  div.innerHTML = `<div class="label">${label}</div><div class="val">${value}${detail ? '<br><small style="color:#888">'+detail+'</small>' : ''}</div>`;
+  results.appendChild(div);
+}
+
+async function checkAll() {
+  results.innerHTML = '';
+  logs = [];
+
+  // 1. HTTPS
+  const isHttps = location.protocol === 'https:';
+  check('Protocolo', location.protocol + '//' + location.host, isHttps ? 'ok' : 'fail', isHttps ? '✅ HTTPS correcto' : '❌ Necesita HTTPS');
+  addLog('Protocol: ' + location.protocol);
+
+  // 2. Service Worker support
+  const hasSW = 'serviceWorker' in navigator;
+  check('Service Worker API', hasSW ? 'Soportado' : 'NO soportado', hasSW ? 'ok' : 'fail');
+  addLog('SW support: ' + hasSW);
+
+  // 3. Service Worker registered
+  if (hasSW) {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      if (regs.length > 0) {
+        const sw = regs[0];
+        const state = sw.active ? sw.active.state : (sw.installing ? 'installing' : (sw.waiting ? 'waiting' : 'unknown'));
+        check('Service Worker registrado', state, state === 'activated' ? 'ok' : 'warn', 'Scope: ' + sw.scope);
+        addLog('SW state: ' + state + ' scope: ' + sw.scope);
+      } else {
+        check('Service Worker registrado', 'NO hay ninguno registrado', 'fail', '❌ El SW no está activo en esta página');
+        addLog('No SW registrations found');
+      }
+    } catch(e) {
+      check('Service Worker', 'Error: ' + e.message, 'fail');
+    }
+  }
+
+  // 4. Manifest
+  try {
+    const resp = await fetch('/manifest.json', { cache: 'no-store' });
+    if (resp.ok) {
+      const manifest = await resp.json();
+      const ct = resp.headers.get('content-type') || '';
+      const ctOk = ct.includes('manifest') || ct.includes('json');
+      check('manifest.json accesible', 'Content-Type: ' + ct, ctOk ? 'ok' : 'warn', ctOk ? '✅ Tipo correcto' : '⚠️ Debería ser application/manifest+json');
+
+      // Icons
+      const icons = manifest.icons || [];
+      const has192 = icons.some(i => i.sizes && i.sizes.includes('192'));
+      const has512 = icons.some(i => i.sizes && i.sizes.includes('512'));
+      check('Iconos en manifest', `192px: ${has192 ? '✅' : '❌'}  512px: ${has512 ? '✅' : '❌'}`, (has192 && has512) ? 'ok' : 'fail');
+
+      // Test icon files actually load
+      for (const icon of icons) {
+        try {
+          const r = await fetch(icon.src, { cache: 'no-store' });
+          const ok = r.ok && r.headers.get('content-type')?.includes('image');
+          check('Icono ' + icon.sizes, icon.src + ' → ' + r.status + ' ' + (r.headers.get('content-type') || '?'), ok ? 'ok' : 'fail', ok ? '✅ Archivo existe y es imagen' : '❌ No es una imagen válida o da error');
+          addLog('Icon ' + icon.src + ': ' + r.status + ' ' + r.headers.get('content-type'));
+        } catch(e) {
+          check('Icono ' + icon.sizes, '❌ Error al cargar: ' + icon.src, 'fail', e.message);
+        }
+      }
+
+      // display mode
+      check('display mode', manifest.display || '(no definido)', manifest.display === 'standalone' ? 'ok' : 'fail', manifest.display === 'standalone' ? '✅ Correcto' : '❌ Debe ser standalone');
+
+      // start_url
+      check('start_url', manifest.start_url || '(vacío)', manifest.start_url ? 'ok' : 'warn');
+
+      addLog('Manifest OK: display=' + manifest.display + ' icons=' + icons.length);
+    } else {
+      check('manifest.json', 'Error HTTP ' + resp.status, 'fail', '❌ No se puede cargar el manifest');
+    }
+  } catch(e) {
+    check('manifest.json', 'Error: ' + e.message, 'fail');
+  }
+
+  // 5. beforeinstallprompt received?
+  check('beforeinstallprompt', window._installPromptReceived ? '✅ Recibido' : '❌ NO recibido aún', window._installPromptReceived ? 'ok' : 'warn',
+    window._installPromptReceived ? 'El navegador considera la app instalable' : 'Chrome no ha enviado el evento. Puede que ya esté instalada, ya la hayas descartado, o falte algún criterio');
+
+  // 6. Standalone mode
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  check('Modo standalone', isStandalone ? '✅ Ejecutándose como app instalada' : '🌐 Ejecutándose en navegador', isStandalone ? 'ok' : 'warn');
+  addLog('Standalone: ' + isStandalone);
+
+  // 7. User Agent
+  check('User Agent', navigator.userAgent, 'warn');
+}
+
+// Capture beforeinstallprompt
+window._installPromptReceived = false;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window._installPromptReceived = true;
+  window._deferredPrompt = e;
+  addLog('⭐ beforeinstallprompt received!');
+  check('🎉 INSTALABLE', 'El evento beforeinstallprompt llegó mientras cargabas esta página', 'ok', 'Puedes instalar la app');
+});
+
+window.addEventListener('load', () => {
+  checkAll();
+  addLog('Page loaded, waiting for beforeinstallprompt...');
+  setTimeout(() => {
+    if (!window._installPromptReceived) {
+      addLog('No beforeinstallprompt after 5s');
+    }
+  }, 5000);
+});
+</script>
+</body>
+</html>

@@ -147,6 +147,10 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 2px; }
         .app-content.dark ::-webkit-scrollbar-thumb { background: #3d4571; }
+
+        .install-banner { display: none; background: #0052CC; color: white; padding: 12px 15px; flex-shrink: 0; align-items: center; gap: 10px; box-shadow: 0 -2px 6px rgba(0,0,0,0.25); }
+        .install-banner.show { display: flex; }
+        .install-banner-close { background: transparent; color: white; border: none; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -279,6 +283,16 @@
                     Aplicación desarrollada por Guillermo Ríos Correa
                 </div>
             </div>
+        </div>
+
+        <!-- Install Banner -->
+        <div class="install-banner" id="installBanner">
+            <div style="flex:1;">
+                <strong style="display:block;font-size:13px;margin-bottom:2px;">📲 Instalar Horas EMT</strong>
+                <span id="installBannerMsg" style="font-size:11px;opacity:0.9;">Instala la app para acceso rápido</span>
+            </div>
+            <button id="installBannerBtn" onclick="app.instalarApp()" style="background:white;color:#0052CC;border:none;border-radius:6px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">Instalar</button>
+            <button class="install-banner-close" onclick="app.ocultarInstallBanner()">×</button>
         </div>
     </div>
 
@@ -752,27 +766,68 @@
 
         // PWA install
         window._deferredPrompt = null;
+        const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const _isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+
+        function _showInstallBanner(ios) {
+            if (_isStandalone) return;
+            const banner = document.getElementById('installBanner');
+            if (!banner) return;
+            const bannerBtn = document.getElementById('installBannerBtn');
+            if (ios) {
+                document.getElementById('installBannerMsg').textContent = 'Toca Compartir ↑ → "Añadir a inicio"';
+                if (bannerBtn) bannerBtn.style.display = 'none';
+            } else {
+                document.getElementById('installBannerMsg').textContent = 'Instala la app para acceso rápido';
+                if (bannerBtn) bannerBtn.style.display = '';
+            }
+            banner.classList.add('show');
+            const btn = document.getElementById('installBtn');
+            if (btn) btn.style.display = 'block';
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             window._deferredPrompt = e;
-            const btn = document.getElementById('installBtn');
-            if (btn) btn.style.display = 'block';
+            _showInstallBanner(false);
         });
+
         window.addEventListener('appinstalled', () => {
             window._deferredPrompt = null;
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.classList.remove('show');
             const btn = document.getElementById('installBtn');
             if (btn) btn.style.display = 'none';
         });
+
         app.instalarApp = async function() {
             if (!window._deferredPrompt) {
-                alert('Usa el menú del navegador → "Añadir a pantalla de inicio" o "Instalar app".');
+                if (_isIOS) {
+                    alert('En Safari:\n1. Toca el botón Compartir (□↑)\n2. Selecciona "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"');
+                } else {
+                    alert('Usa el menú del navegador → "Instalar app" o "Añadir a pantalla de inicio".');
+                }
                 return;
             }
             window._deferredPrompt.prompt();
             const { outcome } = await window._deferredPrompt.userChoice;
-            if (outcome === 'accepted') document.getElementById('installBtn').style.display = 'none';
+            if (outcome === 'accepted') {
+                const banner = document.getElementById('installBanner');
+                if (banner) banner.classList.remove('show');
+                const btn = document.getElementById('installBtn');
+                if (btn) btn.style.display = 'none';
+            }
             window._deferredPrompt = null;
         };
+
+        app.ocultarInstallBanner = function() {
+            const banner = document.getElementById('installBanner');
+            if (banner) banner.classList.remove('show');
+        };
+
+        if (_isIOS && !_isStandalone) {
+            setTimeout(() => _showInstallBanner(true), 3000);
+        }
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

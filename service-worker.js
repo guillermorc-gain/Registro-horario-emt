@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horas-v7';
+const CACHE_NAME = 'horas-v8';
 const BASE_PATH = '/';
 
 const urlsToCache = [

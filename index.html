@@ -405,7 +405,7 @@
         <div class="options-content" id="optionsContent">
 
             <!-- Perfil -->
-            <div class="ops-section open">
+            <div class="ops-section">
                 <button class="ops-title" onclick="app.toggleSection(this)">👤 Perfil <span class="ops-chevron">›</span></button>
                 <div class="ops-body">
                     <div class="ops-row" style="gap:14px;">
@@ -413,22 +413,20 @@
                         <button onclick="app.mostrarAvatarPicker()" style="padding:8px 14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">Cambiar avatar</button>
                     </div>
                     <div class="ops-field">
-                        <span class="ops-field-label">Nombre</span>
-                        <input type="text" class="ops-input" id="displayNameInput" placeholder="Tu nombre">
                         <span class="ops-field-label">Nombre de usuario</span>
                         <input type="text" class="ops-input" id="usernameInput" placeholder="ej: guillermo" autocapitalize="none">
                         <span class="ops-field-sub">Podrás iniciar sesión con este nombre en lugar del correo</span>
                         <span class="ops-field-label">Correo</span>
                         <div id="perfilEmail" style="font-size:13px;color:#7f8c8d;padding:3px 0;"></div>
                         <div style="padding-top:8px;">
-                            <button class="btn-main" onclick="app.guardarPerfil()" style="width:100%;">Guardar perfil</button>
+                            <button class="btn-main" onclick="app.guardarPerfil()" style="width:100%;">Guardar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Apariencia -->
-            <div class="ops-section open">
+            <div class="ops-section">
                 <button class="ops-title" onclick="app.toggleSection(this)">🎨 Apariencia <span class="ops-chevron">›</span></button>
                 <div class="ops-body">
                     <div class="ops-row">
@@ -439,7 +437,7 @@
             </div>
 
             <!-- Trabajo -->
-            <div class="ops-section open">
+            <div class="ops-section">
                 <button class="ops-title" onclick="app.toggleSection(this)">💼 Trabajo <span class="ops-chevron">›</span></button>
                 <div class="ops-body">
                     <div class="ops-field">
@@ -490,9 +488,10 @@
             </div>
 
             <!-- Cuenta -->
-            <div class="ops-section open">
+            <div class="ops-section">
                 <button class="ops-title" onclick="app.toggleSection(this)">🔑 Cuenta <span class="ops-chevron">›</span></button>
                 <div class="ops-body">
+                    <button class="ops-btn" onclick="app.cambiarPassword()">🔒 Cambiar contraseña <span class="ops-arrow">›</span></button>
                     <button class="ops-btn primary-blue" onclick="app.cerrarSesion()">🚪 Cerrar Sesión <span class="ops-arrow">›</span></button>
                     <button class="ops-btn danger" onclick="app.confirmarResetear()">🔄 Resetear Contador <span class="ops-arrow">›</span></button>
                     <button class="ops-btn danger" onclick="app.confirmarBorrarCuenta()">🗑️ Borrar Cuenta <span class="ops-arrow">›</span></button>

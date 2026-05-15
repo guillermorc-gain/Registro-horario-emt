@@ -91,6 +91,7 @@ const app = {
         if (lastInicio) document.getElementById('horaInicio').value = lastInicio;
         const lastFin = localStorage.getItem('lastHoraFin');
         if (lastFin) document.getElementById('horaFin').value = lastFin;
+        if (lastInicio && lastFin) this.calcularHorasPorTiempo();
     },
 
     // ── NIGHT HOURS AUTO-CALC ─────────────────────────────────────

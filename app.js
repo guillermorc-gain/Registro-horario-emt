@@ -30,7 +30,7 @@ const app = {
         const { createClient } = window.supabase;
         this.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
         this._migrarUbicacionAntigua();
-        this.setupAuth();
+        await this.setupAuth();
         this.setupUI();
         if (this.darkMode) this.aplicarDarkMode();
         this._buildAvatarGrid();
@@ -45,22 +45,35 @@ const app = {
         }
     },
 
-    setupAuth() {
-        this.supabase.auth.onAuthStateChange(async (event, session) => {
-            if (session) {
-                this.usuarioActual = session.user;
-                const meta = session.user.user_metadata || {};
-                if (meta.display_name) localStorage.setItem('displayName', meta.display_name);
-                if (meta.username) {
-                    localStorage.setItem('username', meta.username);
-                    localStorage.setItem('u2e_' + meta.username.toLowerCase(), session.user.email);
-                }
-                if (meta.avatar_emoji) localStorage.setItem('avatarEmoji', meta.avatar_emoji);
-                if (meta.avatar_bg)    localStorage.setItem('avatarBg', meta.avatar_bg);
-                this.mostrarApp();
-                this.cargarDatos();
-                this.actualizarBotonesPerfil();
-            } else {
+    _aplicarSesion(user) {
+        this.usuarioActual = user;
+        const meta = user.user_metadata || {};
+        if (meta.display_name) localStorage.setItem('displayName', meta.display_name);
+        if (meta.username) {
+            localStorage.setItem('username', meta.username);
+            localStorage.setItem('u2e_' + meta.username.toLowerCase(), user.email);
+        }
+        if (meta.avatar_emoji) localStorage.setItem('avatarEmoji', meta.avatar_emoji);
+        if (meta.avatar_bg)    localStorage.setItem('avatarBg', meta.avatar_bg);
+        this.mostrarApp();
+        this.cargarDatos();
+        this.actualizarBotonesPerfil();
+    },
+
+    async setupAuth() {
+        // Restore existing session immediately on load
+        const { data: { session: existing } } = await this.supabase.auth.getSession();
+        if (existing) {
+            this._aplicarSesion(existing.user);
+        } else {
+            this.mostrarAuth();
+        }
+
+        // Keep listening for auth changes (login, logout, token refresh)
+        this.supabase.auth.onAuthStateChange((event, session) => {
+            if (session && event !== 'TOKEN_REFRESHED') {
+                this._aplicarSesion(session.user);
+            } else if (!session) {
                 this.usuarioActual = null;
                 this.mostrarAuth();
             }

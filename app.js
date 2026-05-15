@@ -129,7 +129,7 @@ const app = {
             document.getElementById('nocheToggle').checked = true;
             nocheExtra.classList.add('visible');
             document.getElementById('horasNocturnas').value = nocturnas;
-            if (this.precioNocheDefault > 0 && !document.getElementById('precioNoche').value) {
+            if (this.precioNocheDefault > 0) {
                 document.getElementById('precioNoche').value = this.precioNocheDefault;
             }
             this.calcularExtra();
@@ -568,16 +568,18 @@ const app = {
     },
 
     limpiarInput() {
-        document.getElementById('horasInput').value = '';
-        document.getElementById('horaFin').value    = '';
-        document.getElementById('nocheToggle').checked = false;
+        this.establecerFechaHoy();
+        const lastInicio = localStorage.getItem('lastHoraInicio') || '';
+        const lastFin    = localStorage.getItem('lastHoraFin') || '';
+        document.getElementById('horaInicio').value = lastInicio;
+        document.getElementById('horaFin').value    = lastFin;
         document.getElementById('nocheExtra').classList.remove('visible');
         document.getElementById('horasNocturnas').value = '';
         document.getElementById('precioNoche').value    = '';
         document.getElementById('nocheResumen').textContent = '';
-        this.establecerFechaHoy();
-        document.getElementById('horaInicio').value = localStorage.getItem('lastHoraInicio') || '';
-        document.getElementById('horaFin').value    = localStorage.getItem('lastHoraFin') || '';
+        document.getElementById('nocheToggle').checked = false;
+        if (lastInicio && lastFin) this.calcularHorasPorTiempo();
+        else document.getElementById('horasInput').value = '';
     },
 
     // ── HISTORIAL MODAL ───────────────────────────────────────────

@@ -29,7 +29,8 @@
             overflow: hidden;
         }
         .container.dark { background: #1a1a2e; color: #e0e0e0; }
-        
+
+        /* AUTH */
         .auth-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 20px; gap: 20px; }
         .auth-screen.hidden { display: none; }
         .logo { width: 70px; height: 70px; }
@@ -43,7 +44,8 @@
         .error { color: #e74c3c; background: #fadbd8; }
         .success { color: #27ae60; background: #d5f4e6; }
         .msg.show { display: block; }
-        
+
+        /* APP SCREEN */
         .app-screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
         .app-screen.active { display: flex; }
         .app-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; text-align: center; flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
@@ -51,33 +53,59 @@
         .app-header h1 { font-size: 18px; margin: 0; flex: 1; }
         .app-header p { font-size: 12px; opacity: 0.9; margin: 0; }
         .profile-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; }
-        
+
         .app-content { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .app-content.dark { background: #16213e; }
         .info-date { text-align: center; font-size: 12px; color: #667eea; font-weight: 600; }
-        .app-content.dark .info-date { color: #667eea; }
-        
+
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; flex-shrink: 0; }
         .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 10px; text-align: center; }
         .stat-label { font-size: 11px; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         .stat-value { font-size: 26px; font-weight: 700; }
-        
+
         .progress-bar { width: 100%; height: 8px; background: #ecf0f1; border-radius: 10px; overflow: hidden; margin-bottom: 6px; }
         .app-content.dark .progress-bar { background: #2d3561; }
         .progress-fill { height: 100%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); width: 0%; transition: width 0.4s ease; }
         .progress-text { text-align: center; color: #7f8c8d; font-size: 11px; font-weight: 600; }
         .app-content.dark .progress-text { color: #a0a0a0; }
-        
+
+        /* WORK DETECTION BANNER */
+        .work-banner { display: none; background: #27ae60; color: white; padding: 10px 14px; flex-shrink: 0; align-items: center; gap: 10px; border-radius: 10px; }
+        .work-banner.show { display: flex; }
+        .work-banner-close { background: transparent; color: white; border: none; font-size: 20px; cursor: pointer; padding: 0 2px; line-height: 1; opacity: 0.8; }
+
+        /* INPUT SECTION */
         .input-section { background: #f8f9fa; padding: 12px; border-radius: 10px; border: 2px solid #e0e0e0; flex-shrink: 0; }
         .app-content.dark .input-section { background: #2d3561; border-color: #3d4571; }
-        .input-section label { display: block; margin-bottom: 6px; color: #2c3e50; font-weight: 600; font-size: 12px; }
-        .app-content.dark .input-section label { color: #e0e0e0; }
-        .input-section input { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; font-family: inherit; margin-bottom: 10px; background: white; color: #333; }
-        .app-content.dark .input-section input { background: #1a1a2e; color: #e0e0e0; border-color: #3d4571; }
-        .input-section button { width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; margin-bottom: 8px; }
-        .btn-secondary { background: #95a5a6 !important; }
+        .input-section.editing { border-color: #667eea; }
+        .input-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 8px; }
+        .input-group { display: flex; flex-direction: column; flex: 1; }
+        .input-group label { font-size: 11px; font-weight: 600; color: #2c3e50; margin-bottom: 4px; }
+        .app-content.dark .input-group label { color: #e0e0e0; }
+        .input-group input { width: 100%; padding: 9px 8px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 13px; font-family: inherit; background: white; color: #333; }
+        .app-content.dark .input-group input { background: #1a1a2e; color: #e0e0e0; border-color: #3d4571; }
+        .input-group input:focus { outline: none; border-color: #667eea; }
+        .noche-compact { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 8px 12px; background: #fff3cd; border-radius: 8px; border: 1.5px solid #ffc107; cursor: pointer; flex-shrink: 0; }
+        .app-content.dark .noche-compact { background: #2a2500; border-color: #665500; }
+        .noche-compact span { font-size: 17px; line-height: 1; }
+        .noche-compact input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; accent-color: #f39c12; }
+        .noche-extra { display: none; margin-bottom: 8px; padding: 10px; background: #fff8e1; border-radius: 8px; border: 1px solid #ffc107; }
+        .noche-extra.visible { display: block; }
+        .app-content.dark .noche-extra { background: #1a1500; border-color: #665500; }
+        .noche-resumen { font-size: 11px; color: #856404; font-weight: 700; text-align: right; padding-top: 4px; }
+        .app-content.dark .noche-resumen { color: #ffc107; }
+        .noche-extra .input-group label { color: #856404; }
+        .app-content.dark .noche-extra .input-group label { color: #ffc107; }
+        .noche-extra .input-group input { border-color: #ffc107; }
+        .app-content.dark .noche-extra .input-group input { background: #0a0800; color: #e0e0e0; border-color: #665500; }
+        .edit-label { font-size: 11px; color: #667eea; font-weight: 700; text-align: center; padding: 2px 0 6px; }
+        .btn-row { display: flex; gap: 6px; }
+        .btn-main { flex: 1; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
+        .btn-secondary { padding: 10px 14px; background: #95a5a6; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
+        .btn-cancel { padding: 10px 12px; background: #e74c3c; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; }
         .btn-danger { background: #e74c3c !important; }
-        
+
+        /* HISTORIAL */
         .historial-section { flex: 1; min-height: 0; display: flex; flex-direction: column; }
         .historial-section h3 { color: #34495e; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
         .app-content.dark .historial-section h3 { color: #a0a0a0; }
@@ -88,73 +116,74 @@
         .historial-fecha { color: #7f8c8d; font-weight: 600; font-size: 11px; }
         .app-content.dark .historial-fecha { color: #a0a0a0; }
         .historial-horas { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3px 10px; border-radius: 20px; font-weight: 600; font-size: 10px; }
-        .historial-delete { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; border: none; font-weight: 600; }
+        .historial-horario { color: #95a5a6; font-size: 10px; font-style: italic; }
+        .historial-noche { color: #856404; font-size: 10px; font-weight: 600; display: block; }
+        .app-content.dark .historial-noche { color: #ffc107; }
+        .historial-actions { display: flex; gap: 4px; }
+        .historial-edit { background: #3498db; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; border: none; font-weight: 600; }
+        .historial-delete { background: #e74c3c; color: white; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; border: none; font-weight: 600; }
         .empty-state { text-align: center; color: #95a5a6; padding: 20px 10px; font-size: 12px; }
         .app-content.dark .empty-state { color: #7f8c8d; }
-        
-        .logout-btn { width: 100%; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; font-family: inherit; flex-shrink: 0; margin-top: 10px; }
-        
+
+        /* OPTIONS SCREEN */
         .options-screen { display: none; flex-direction: column; flex: 1; min-height: 0; }
         .options-screen.active { display: flex; }
-        .options-content { flex: 1; min-height: 0; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .options-content { flex: 1; min-height: 0; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .options-content.dark { background: #16213e; }
-        .option-item { background: #f8f9fa; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .options-content.dark .option-item { background: #2d3561; }
-        .option-item label { font-weight: 600; color: #2c3e50; }
-        .options-content.dark .option-item label { color: #e0e0e0; }
-        
-        .footer { text-align: center; font-size: 11px; color: #7f8c8d; padding: 10px; flex-shrink: 0; }
+
+        .ops-section { background: #f8f9fa; border-radius: 12px; overflow: hidden; }
+        .options-content.dark .ops-section { background: #2d3561; }
+        .ops-title { padding: 9px 14px 7px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #667eea; background: rgba(102,126,234,0.07); border-bottom: 1px solid #e8e8e8; }
+        .options-content.dark .ops-title { border-color: #3d4571; background: rgba(102,126,234,0.1); }
+        .ops-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #efefef; gap: 10px; }
+        .ops-row:last-child { border-bottom: none; }
+        .options-content.dark .ops-row { border-color: #3d4571; }
+        .ops-row-label { font-size: 13px; font-weight: 600; color: #2c3e50; display: flex; align-items: center; gap: 8px; }
+        .options-content.dark .ops-row-label { color: #e0e0e0; }
+        .ops-row-sub { font-size: 11px; color: #7f8c8d; font-weight: 400; display: block; margin-top: 1px; }
+        .options-content.dark .ops-row-sub { color: #a0a0a0; }
+        .ops-btn { width: 100%; padding: 12px 14px; background: transparent; border: none; border-bottom: 1px solid #efefef; cursor: pointer; text-align: left; font-size: 13px; font-weight: 600; font-family: inherit; color: #2c3e50; display: flex; align-items: center; gap: 10px; }
+        .ops-btn:last-child { border-bottom: none; }
+        .options-content.dark .ops-btn { border-color: #3d4571; color: #e0e0e0; }
+        .ops-btn:active { background: rgba(0,0,0,0.05); }
+        .ops-btn.danger { color: #e74c3c; }
+        .ops-btn.primary-blue { color: #003A99; }
+        .options-content.dark .ops-btn.primary-blue { color: #6699ff; }
+        .ops-btn .ops-arrow { margin-left: auto; color: #bdc3c7; font-size: 14px; }
+        .ops-input { width: 100%; padding: 8px 10px; border: 1.5px solid #e0e0e0; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; color: #333; }
+        .options-content.dark .ops-input { background: #1a1a2e; color: #e0e0e0; border-color: #3d4571; }
+        .ops-night-input { width: 100%; padding: 8px 10px; border: 1.5px solid #ffc107; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; color: #333; }
+        .options-content.dark .ops-night-input { background: #0a0800; color: #e0e0e0; }
+        .gps-status { font-size: 11px; font-weight: 600; color: #27ae60; }
+        .gps-status.none { color: #95a5a6; }
+
+        .footer { text-align: center; font-size: 11px; color: #7f8c8d; padding: 6px; }
         .options-content.dark .footer { color: #a0a0a0; }
-        
+
+        /* MODAL */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
         .modal.show { display: flex; }
         .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; }
-        .options-content.dark .modal-content { background: #2d3561; color: #e0e0e0; }
+        .modal-content.dark { background: #2d3561; color: #e0e0e0; }
         .modal-content h2 { margin-bottom: 15px; }
         .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
-        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .modal-buttons button { flex: 1; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: inherit; }
         .modal-btn-confirm { background: #e74c3c; color: white; }
         .modal-btn-cancel { background: #95a5a6; color: white; }
-        
 
-        /* ── NOCHE ── */
-        .noche-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 8px 10px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffc107; }
-        .input-section .noche-row { background: #fff3cd; border-color: #ffc107; }
-        .app-content.dark .input-section .noche-row { background: #2a2500; border-color: #665500; }
-        .noche-row label { margin: 0; color: #856404; font-size: 12px; font-weight: 600; flex: 1; }
-        .app-content.dark .noche-row label { color: #ffc107; }
-        .noche-extra { display: none; flex-direction: column; gap: 6px; margin-bottom: 10px; padding: 10px; background: #fff8e1; border-radius: 8px; border: 1px solid #ffc107; }
-        .noche-extra.visible { display: flex; }
-        .app-content.dark .noche-extra { background: #1a1500; border-color: #665500; }
-        .noche-extra label { color: #856404; font-size: 12px; font-weight: 600; margin-bottom: 3px; }
-        .app-content.dark .noche-extra label { color: #ffc107; }
-        .noche-extra input { width: 100%; padding: 8px; border: 1px solid #ffc107; border-radius: 6px; font-size: 13px; font-family: inherit; background: white; color: #333; margin-bottom: 6px; }
-        .app-content.dark .noche-extra input { background: #0a0800; color: #e0e0e0; border-color: #665500; }
-        .noche-resumen { font-size: 11px; color: #856404; font-weight: 700; text-align: right; padding: 4px 0; }
-        .app-content.dark .noche-resumen { color: #ffc107; }
-        .historial-noche { color: #856404; font-size: 10px; font-weight: 600; display: block; }
-        .app-content.dark .historial-noche { color: #ffc107; }
-        /* opciones precio noche */
-        .option-precio { background: #fff8e1; padding: 12px; border-radius: 8px; border: 1px solid #ffc107; }
-        .options-content.dark .option-precio { background: #1a1500; border-color: #665500; }
-        .option-precio label { display: block; font-weight: 600; color: #856404; font-size: 13px; margin-bottom: 6px; }
-        .options-content.dark .option-precio label { color: #ffc107; }
-        .option-precio input { width: 100%; padding: 9px; border: 1px solid #ffc107; border-radius: 6px; font-size: 14px; font-family: inherit; background: white; color: #333; }
-        .options-content.dark .option-precio input { background: #0a0800; color: #e0e0e0; }
-        .option-precio small { display: block; margin-top: 5px; color: #856404; font-size: 11px; }
-        .options-content.dark .option-precio small { color: #ffc107; }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 2px; }
-        .app-content.dark ::-webkit-scrollbar-thumb { background: #3d4571; }
-
+        /* INSTALL BANNER */
         .install-banner { display: none; background: #0052CC; color: white; padding: 12px 15px; flex-shrink: 0; align-items: center; gap: 10px; box-shadow: 0 -2px 6px rgba(0,0,0,0.25); }
         .install-banner.show { display: flex; }
         .install-banner-close { background: transparent; color: white; border: none; font-size: 22px; cursor: pointer; padding: 0 4px; line-height: 1; opacity: 0.8; }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #667eea; border-radius: 2px; }
+        .app-content.dark ::-webkit-scrollbar-thumb, .options-content.dark ::-webkit-scrollbar-thumb { background: #3d4571; }
     </style>
 </head>
 <body>
     <div class="container">
+
         <!-- Auth Screen -->
         <div class="auth-screen" id="authScreen">
             <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
@@ -179,9 +208,7 @@
                 <input type="email" id="loginEmail" placeholder="Correo">
                 <input type="password" id="loginPassword" placeholder="Contraseña">
                 <button type="button" onclick="app.login()">Iniciar Sesión</button>
-                <div class="auth-toggle">
-                    ¿Sin cuenta? <a onclick="app.toggleAuth()">Regístrate</a>
-                </div>
+                <div class="auth-toggle">¿Sin cuenta? <a onclick="app.toggleAuth()">Regístrate</a></div>
             </div>
             <div class="auth-form" id="registerForm" style="display: none;">
                 <h2 style="color: #2c3e50; text-align: center; font-size: 14px; margin-bottom: 10px;">Registrarse</h2>
@@ -189,9 +216,7 @@
                 <input type="password" id="registerPassword" placeholder="Contraseña (mín. 6)">
                 <input type="password" id="registerPassword2" placeholder="Confirmar contraseña">
                 <button type="button" onclick="app.register()">Crear Cuenta</button>
-                <div class="auth-toggle">
-                    ¿Ya tienes cuenta? <a onclick="app.toggleAuth()">Inicia sesión</a>
-                </div>
+                <div class="auth-toggle">¿Ya tienes cuenta? <a onclick="app.toggleAuth()">Inicia sesión</a></div>
             </div>
         </div>
 
@@ -206,6 +231,7 @@
             </div>
             <div class="app-content" id="appContent">
                 <div class="info-date" id="fechaHoy"></div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">Restantes</div>
@@ -216,43 +242,83 @@
                         <div class="stat-value" id="horasTrabajadas">0</div>
                     </div>
                 </div>
+
                 <div style="flex-shrink: 0;">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="progress-text">
-                        <span id="porcentaje">0</span>% completado
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                    <div class="progress-text"><span id="porcentaje">0</span>% completado</div>
                 </div>
-                <div class="input-section">
-                    <label>Fecha:</label>
-                    <input type="date" id="fechaInput">
-                    <label>Horas:</label>
-                    <input type="number" id="horasInput" min="0" step="0.5" placeholder="8, 4.5...">
-                    <div class="noche-row">
-                        <span style="font-size:16px;">🌙</span>
-                        <label for="nocheToggle">Incluye horas nocturnas</label>
-                        <input type="checkbox" id="nocheToggle" onchange="app.toggleNoche()">
+
+                <!-- GPS Work Detection Banner -->
+                <div class="work-banner" id="workBanner">
+                    <div style="flex:1;">
+                        <strong style="font-size:13px;display:block;">📍 Parece que estás en el trabajo</strong>
+                        <span style="font-size:11px;opacity:0.9;">¿Registras la jornada de hoy?</span>
                     </div>
+                    <button onclick="app.registrarJornadaHoy()" style="background:white;color:#27ae60;border:none;border-radius:6px;padding:7px 11px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">Registrar</button>
+                    <button class="work-banner-close" onclick="document.getElementById('workBanner').classList.remove('show')">×</button>
+                </div>
+
+                <!-- Input Section -->
+                <div class="input-section" id="inputSection">
+                    <div id="editLabel" class="edit-label" style="display:none;">✏️ Editando registro</div>
+
+                    <!-- Row 1: Date + Night toggle -->
+                    <div class="input-row">
+                        <div class="input-group" style="flex:1;">
+                            <label>Fecha</label>
+                            <input type="date" id="fechaInput">
+                        </div>
+                        <div class="noche-compact" onclick="app.clickNocheCompact(event)" title="Horas nocturnas">
+                            <span>🌙</span>
+                            <input type="checkbox" id="nocheToggle" onclick="event.stopPropagation(); app.toggleNoche()">
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Time pickers + Hours -->
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Inicio</label>
+                            <input type="time" id="horaInicio" oninput="app.calcularHorasPorTiempo()">
+                        </div>
+                        <div class="input-group">
+                            <label>Fin</label>
+                            <input type="time" id="horaFin" oninput="app.calcularHorasPorTiempo()">
+                        </div>
+                        <div class="input-group" style="flex:0.8;">
+                            <label>Horas</label>
+                            <input type="number" id="horasInput" min="0" step="0.5" placeholder="8">
+                        </div>
+                    </div>
+
+                    <!-- Night details (compact) -->
                     <div class="noche-extra" id="nocheExtra">
-                        <label>Horas nocturnas:</label>
-                        <input type="number" id="horasNocturnas" min="0" step="0.5" placeholder="ej: 2" oninput="app.calcularExtra()">
-                        <label>Precio extra por hora (€):</label>
-                        <input type="number" id="precioNoche" min="0" step="0.01" placeholder="ej: 1.50" oninput="app.calcularExtra()">
+                        <div class="input-row" style="margin-bottom:0;">
+                            <div class="input-group">
+                                <label>Hrs. noct.</label>
+                                <input type="number" id="horasNocturnas" min="0" step="0.5" placeholder="2" oninput="app.calcularExtra()">
+                            </div>
+                            <div class="input-group">
+                                <label>€/h noct.</label>
+                                <input type="number" id="precioNoche" min="0" step="0.01" placeholder="1.50" oninput="app.calcularExtra()">
+                            </div>
+                        </div>
                         <div class="noche-resumen" id="nocheResumen"></div>
                     </div>
-                    <button type="button" onclick="app.registrarHoras()">Registrar</button>
-                    <button class="btn-secondary" type="button" onclick="app.limpiarInput()">Limpiar</button>
+
+                    <!-- Buttons -->
+                    <div class="btn-row">
+                        <button type="button" class="btn-main" id="registrarBtn" onclick="app.registrarHoras()">Registrar</button>
+                        <button type="button" class="btn-cancel" id="cancelarBtn" onclick="app.cancelarEdicion()" style="display:none;">✕</button>
+                        <button type="button" class="btn-secondary" onclick="app.limpiarInput()">Limpiar</button>
+                    </div>
                 </div>
+
+                <!-- History -->
                 <div class="historial-section">
                     <h3>Últimas jornadas</h3>
                     <ul class="historial-list" id="historialList">
                         <li class="empty-state">Sin registros</li>
                     </ul>
-                </div>
-                <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px;">
-                    <button type="button" onclick="app.mostrarCambiarHoras()" style="width:100%;padding:10px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;">⚙️ Cambiar Horas Anuales</button>
-                    <button class="logout-btn" type="button" onclick="app.cerrarSesion()">🚪 Cerrar Sesión</button>
                 </div>
             </div>
         </div>
@@ -260,29 +326,72 @@
         <!-- Options Screen -->
         <div class="options-screen" id="optionsScreen">
             <div class="app-header" id="optionsHeader">
-                <h1>Opciones</h1>
+                <h1>Ajustes</h1>
                 <button class="profile-btn" onclick="app.mostrarApp()" style="font-size: 20px;">←</button>
             </div>
             <div class="options-content" id="optionsContent">
-                <div class="option-item">
-                    <label>Modo Oscuro</label>
-                    <input type="checkbox" id="darkModeToggle" onchange="app.toggleDarkMode()">
+
+                <!-- Apariencia -->
+                <div class="ops-section">
+                    <div class="ops-title">Apariencia</div>
+                    <div class="ops-row">
+                        <span class="ops-row-label">🌙 Modo Oscuro</span>
+                        <input type="checkbox" id="darkModeToggle" onchange="app.toggleDarkMode()">
+                    </div>
                 </div>
-                <div class="option-precio">
-                    <label>💰 Precio extra hora nocturna (€)</label>
-                    <input type="number" id="precioNocheGlobal" min="0" step="0.01" placeholder="ej: 1.50" onchange="app.guardarPrecioNoche()">
-                    <small>Valor por defecto al registrar horas nocturnas</small>
+
+                <!-- Trabajo -->
+                <div class="ops-section">
+                    <div class="ops-title">Trabajo</div>
+                    <div class="ops-row" style="flex-direction:column;align-items:flex-start;gap:6px;">
+                        <span class="ops-row-label">💰 Precio hora nocturna (€)</span>
+                        <input type="number" class="ops-night-input" id="precioNocheGlobal" min="0" step="0.01" placeholder="ej: 1.50" onchange="app.guardarPrecioNoche()">
+                        <span style="font-size:11px;color:#856404;">Valor por defecto al registrar horas nocturnas</span>
+                    </div>
+                    <button class="ops-btn" onclick="app.mostrarCambiarHoras()">
+                        ⚙️ Horas anuales
+                        <span id="horasAnualesDisplay" style="margin-left:auto;color:#667eea;font-weight:700;"></span>
+                        <span class="ops-arrow">›</span>
+                    </button>
+                    <button class="ops-btn" onclick="app.revisarSuma()">🔍 Revisar suma de horas <span class="ops-arrow">›</span></button>
                 </div>
-                <button type="button" id="installBtn" class="btn-secondary" onclick="app.instalarApp()" style="display:none;">📲 Instalar aplicación</button>
-                <button type="button" class="btn-secondary" onclick="app.revisarSuma()">🔍 Revisar Suma</button>
-                <button type="button" class="btn-secondary" onclick="app.mostrarCambiarHoras()">⚙️ Cambiar Horas Anuales</button>
-                <button type="button" class="btn-secondary" onclick="app.exportarDatos()">💾 Exportar datos JSON</button>
-                <button type="button" onclick="app.cerrarSesion()" style="width:100%;padding:11px;background:#003A99;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;">🚪 Cerrar Sesión</button>
-                <button type="button" class="btn-danger" onclick="app.confirmarResetear()">🔄 Resetear Contador</button>
-                <button type="button" class="btn-danger" onclick="app.confirmarBorrarCuenta()">🗑️ Borrar Cuenta</button>
-                <div class="footer">
-                    Aplicación desarrollada por Guillermo Ríos Correa
+
+                <!-- GPS -->
+                <div class="ops-section">
+                    <div class="ops-title">📍 Detección de trabajo</div>
+                    <div class="ops-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+                        <span class="ops-row-label" style="flex-direction:column;align-items:flex-start;">
+                            Notificación al llegar al trabajo
+                            <span class="ops-row-sub">La app detecta si estás cerca y te avisa para registrar</span>
+                        </span>
+                        <div id="gpsStatus" class="gps-status none">Sin ubicación guardada</div>
+                        <button onclick="app.guardarUbicacionTrabajo()" style="padding:8px 14px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:6px;font-weight:600;font-size:12px;cursor:pointer;font-family:inherit;">📍 Guardar ubicación actual del trabajo</button>
+                        <button onclick="app.borrarUbicacionTrabajo()" id="borrarGpsBtn" style="display:none;padding:6px 12px;background:#e74c3c;color:white;border:none;border-radius:6px;font-weight:600;font-size:11px;cursor:pointer;font-family:inherit;">🗑️ Borrar ubicación</button>
+                    </div>
                 </div>
+
+                <!-- Copia de Seguridad -->
+                <div class="ops-section">
+                    <div class="ops-title">💾 Copia de Seguridad</div>
+                    <button class="ops-btn" onclick="app.exportarDatos()">⬆️ Exportar datos JSON <span class="ops-arrow">›</span></button>
+                    <button class="ops-btn" onclick="app.importarDatos()">⬇️ Importar / Restaurar copia <span class="ops-arrow">›</span></button>
+                </div>
+
+                <!-- Aplicación -->
+                <div class="ops-section">
+                    <div class="ops-title">Aplicación</div>
+                    <button class="ops-btn" id="installBtn" onclick="app.instalarApp()" style="display:none;">📲 Instalar aplicación <span class="ops-arrow">›</span></button>
+                </div>
+
+                <!-- Cuenta -->
+                <div class="ops-section">
+                    <div class="ops-title">Cuenta</div>
+                    <button class="ops-btn primary-blue" onclick="app.cerrarSesion()">🚪 Cerrar Sesión <span class="ops-arrow">›</span></button>
+                    <button class="ops-btn danger" onclick="app.confirmarResetear()">🔄 Resetear Contador <span class="ops-arrow">›</span></button>
+                    <button class="ops-btn danger" onclick="app.confirmarBorrarCuenta()">🗑️ Borrar Cuenta <span class="ops-arrow">›</span></button>
+                </div>
+
+                <div class="footer">Aplicación desarrollada por Guillermo Ríos Correa</div>
             </div>
         </div>
 
@@ -299,7 +408,7 @@
 
     <!-- Modal -->
     <div class="modal" id="modal">
-        <div class="modal-content">
+        <div class="modal-content" id="modalContent">
             <h2 id="modalTitle"></h2>
             <p id="modalMessage"></p>
             <div class="modal-buttons">
@@ -321,6 +430,7 @@
             horasAnualesCustom: parseFloat(localStorage.getItem('horasAnuales')) || HORAS_ANUALES,
             precioNocheDefault: parseFloat(localStorage.getItem('precioNoche')) || 0,
             modalCallback: null,
+            editingId: null,
 
             async init() {
                 if (window.supabase && window.supabase.createClient) {
@@ -353,6 +463,7 @@
                 if (this.precioNocheDefault > 0) {
                     document.getElementById('precioNocheGlobal').value = this.precioNocheDefault;
                 }
+                this.actualizarEstadoGPS();
             },
 
             generarAvatarPerfil() {
@@ -368,16 +479,15 @@
                 const hoy = new Date();
                 const año = hoy.getFullYear();
                 const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-                const día = String(hoy.getDate()).padStart(2, '0');
-                document.getElementById('fechaInput').value = `${año}-${mes}-${día}`;
-                document.getElementById('fechaInput').max = `${año}-${mes}-${día}`;
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                document.getElementById('fechaInput').value = `${año}-${mes}-${dia}`;
+                document.getElementById('fechaInput').max = `${año}-${mes}-${dia}`;
             },
 
             actualizarFecha() {
                 const ahora = new Date();
                 const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const fechaFormato = ahora.toLocaleDateString('es-ES', opciones);
-                document.getElementById('fechaHoy').textContent = `📅 ${fechaFormato}`;
+                document.getElementById('fechaHoy').textContent = `📅 ${ahora.toLocaleDateString('es-ES', opciones)}`;
             },
 
             toggleAuth() {
@@ -399,12 +509,7 @@
             async login() {
                 const email = document.getElementById('loginEmail').value.trim();
                 const password = document.getElementById('loginPassword').value;
-
-                if (!email || !password) {
-                    this.mostrarMensaje('❌ Completa todos los campos', 'error');
-                    return;
-                }
-
+                if (!email || !password) { this.mostrarMensaje('❌ Completa todos los campos', 'error'); return; }
                 const { error } = await this.supabase.auth.signInWithPassword({ email, password });
                 if (error) {
                     this.mostrarMensaje('❌ Correo o contraseña incorrectos', 'error');
@@ -418,22 +523,9 @@
                 const email = document.getElementById('registerEmail').value.trim();
                 const password = document.getElementById('registerPassword').value;
                 const password2 = document.getElementById('registerPassword2').value;
-
-                if (!email || !password || !password2) {
-                    this.mostrarMensaje('❌ Completa todos los campos', 'error');
-                    return;
-                }
-
-                if (password !== password2) {
-                    this.mostrarMensaje('❌ Las contraseñas no coinciden', 'error');
-                    return;
-                }
-
-                if (password.length < 6) {
-                    this.mostrarMensaje('❌ Mínimo 6 caracteres', 'error');
-                    return;
-                }
-
+                if (!email || !password || !password2) { this.mostrarMensaje('❌ Completa todos los campos', 'error'); return; }
+                if (password !== password2) { this.mostrarMensaje('❌ Las contraseñas no coinciden', 'error'); return; }
+                if (password.length < 6) { this.mostrarMensaje('❌ Mínimo 6 caracteres', 'error'); return; }
                 const { error } = await this.supabase.auth.signUp({ email, password });
                 if (error) {
                     this.mostrarMensaje('❌ ' + error.message, 'error');
@@ -465,32 +557,27 @@
                 document.getElementById('appScreen').classList.remove('active');
                 document.getElementById('optionsScreen').classList.add('active');
                 document.getElementById('darkModeToggle').checked = this.darkMode;
+                document.getElementById('horasAnualesDisplay').textContent = this.horasAnualesCustom + 'h';
+                this.actualizarEstadoGPS();
             },
 
             async cargarDatos() {
                 if (!this.usuarioActual) return;
-
                 const { data } = await this.supabase
-                    .from('horas_trabajo')
-                    .select('*')
-                    .eq('user_id', this.usuarioActual.id)
-                    .single();
-
-                if (data) {
-                    this.actualizarUI(data);
-                } else {
-                    this.actualizarUI({ horasTrabajadas: 0, historial: {} });
-                }
+                    .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+                this.actualizarUI(data || { horasTrabajadas: 0, historial: {} });
+                this.verificarUbicacion();
             },
 
             async registrarHoras() {
                 if (!this.usuarioActual) return;
-
                 const horas = parseFloat(document.getElementById('horasInput').value);
                 const fecha = document.getElementById('fechaInput').value;
                 if (!fecha || !document.getElementById('horasInput').value || isNaN(horas) || horas <= 0) {
-                    alert('❌ Datos inválidos'); return;
+                    alert('❌ Introduce fecha y horas válidas'); return;
                 }
+                const horaInicio = document.getElementById('horaInicio').value;
+                const horaFin = document.getElementById('horaFin').value;
                 const esNoche = document.getElementById('nocheToggle').checked;
                 const horasNocturnas = esNoche ? (parseFloat(document.getElementById('horasNocturnas').value) || 0) : 0;
                 const precioNoche = esNoche ? (parseFloat(document.getElementById('precioNoche').value) || 0) : 0;
@@ -498,186 +585,101 @@
                 if (esNoche && horasNocturnas > horas) { alert('❌ Las horas nocturnas no pueden superar las horas totales'); return; }
 
                 const { data: datosActuales } = await this.supabase
-                    .from('horas_trabajo')
-                    .select('*')
-                    .eq('user_id', this.usuarioActual.id)
-                    .single();
-
+                    .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
                 const datos = datosActuales || { horasTrabajadas: 0, historial: {} };
+                if (!datos.historial) datos.historial = {};
+
+                // Edit mode: free old hours before adding new
+                if (this.editingId && datos.historial[this.editingId]) {
+                    datos.horasTrabajadas = Math.round((datos.horasTrabajadas - datos.historial[this.editingId].horas) * 10) / 10;
+                    delete datos.historial[this.editingId];
+                }
 
                 if (datos.horasTrabajadas + horas > this.horasAnualesCustom) {
-                    const disponibles = this.horasAnualesCustom - datos.horasTrabajadas;
-                    alert(`❌ Solo tienes ${disponibles.toFixed(1)}h`);
+                    alert(`❌ Solo tienes ${(this.horasAnualesCustom - datos.horasTrabajadas).toFixed(1)}h disponibles`);
                     return;
                 }
 
                 datos.horasTrabajadas = Math.round((datos.horasTrabajadas + horas) * 10) / 10;
-
-                const fechaObj = new Date(fecha);
-                const fechaFormato = fechaObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const fechaFormato = new Date(fecha + 'T12:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 const registroId = fecha.replace(/-/g, '');
-                if (!datos.historial) datos.historial = {};
-                datos.historial[registroId] = { fecha: fechaFormato, horas, timestamp: new Date(fecha).getTime(), ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {}) };
+                datos.historial[registroId] = {
+                    fecha: fechaFormato,
+                    horas,
+                    timestamp: new Date(fecha + 'T12:00:00').getTime(),
+                    ...(horaInicio && horaFin ? { horaInicio, horaFin } : {}),
+                    ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {})
+                };
 
                 if (datosActuales) {
-                    await this.supabase
-                        .from('horas_trabajo')
-                        .update(datos)
-                        .eq('user_id', this.usuarioActual.id);
+                    await this.supabase.from('horas_trabajo').update(datos).eq('user_id', this.usuarioActual.id);
                 } else {
-                    await this.supabase
-                        .from('horas_trabajo')
-                        .insert([{ user_id: this.usuarioActual.id, ...datos }]);
+                    await this.supabase.from('horas_trabajo').insert([{ user_id: this.usuarioActual.id, ...datos }]);
                 }
 
                 this.actualizarUI(datos);
-                document.getElementById('horasInput').value = '';
-                document.getElementById('nocheToggle').checked = false;
-                document.getElementById('nocheExtra').classList.remove('visible');
-                document.getElementById('horasNocturnas').value = '';
-                document.getElementById('precioNoche').value = '';
-                document.getElementById('nocheResumen').textContent = '';
-                this.establecerFechaHoy();
+                this.cancelarEdicion();
+            },
+
+            editarRegistro(id, reg) {
+                this.editingId = id;
+                const fecha = `${id.slice(0,4)}-${id.slice(4,6)}-${id.slice(6,8)}`;
+                document.getElementById('fechaInput').value = fecha;
+                document.getElementById('horasInput').value = reg.horas;
+                document.getElementById('horaInicio').value = reg.horaInicio || '';
+                document.getElementById('horaFin').value = reg.horaFin || '';
+                if (reg.horasNocturnas) {
+                    document.getElementById('nocheToggle').checked = true;
+                    document.getElementById('nocheExtra').classList.add('visible');
+                    document.getElementById('horasNocturnas').value = reg.horasNocturnas;
+                    document.getElementById('precioNoche').value = reg.precioNoche || '';
+                    this.calcularExtra();
+                }
+                document.getElementById('registrarBtn').textContent = '✏️ Actualizar';
+                document.getElementById('cancelarBtn').style.display = '';
+                document.getElementById('editLabel').style.display = 'block';
+                document.getElementById('inputSection').classList.add('editing');
+                document.getElementById('appContent').scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            cancelarEdicion() {
+                this.editingId = null;
+                this.limpiarInput();
+                document.getElementById('registrarBtn').textContent = 'Registrar';
+                document.getElementById('cancelarBtn').style.display = 'none';
+                document.getElementById('editLabel').style.display = 'none';
+                document.getElementById('inputSection').classList.remove('editing');
+            },
+
+            calcularHorasPorTiempo() {
+                const inicio = document.getElementById('horaInicio').value;
+                const fin = document.getElementById('horaFin').value;
+                if (!inicio || !fin) return;
+                const [h1, m1] = inicio.split(':').map(Number);
+                const [h2, m2] = fin.split(':').map(Number);
+                let minutos = (h2 * 60 + m2) - (h1 * 60 + m1);
+                if (minutos < 0) minutos += 24 * 60;
+                const horas = Math.round(minutos / 60 * 2) / 2;
+                if (horas > 0) document.getElementById('horasInput').value = horas;
             },
 
             async borrarRegistro(registroId) {
                 if (!this.usuarioActual) return;
-
-                const { data: datosActuales } = await this.supabase
-                    .from('horas_trabajo')
-                    .select('*')
-                    .eq('user_id', this.usuarioActual.id)
-                    .single();
-
-                if (datosActuales && datosActuales.historial && datosActuales.historial[registroId]) {
-                    const horasABorrar = datosActuales.historial[registroId].horas;
-                    datosActuales.horasTrabajadas = Math.round((datosActuales.horasTrabajadas - horasABorrar) * 10) / 10;
-                    delete datosActuales.historial[registroId];
-
-                    await this.supabase
-                        .from('horas_trabajo')
-                        .update(datosActuales)
-                        .eq('user_id', this.usuarioActual.id);
-
-                    this.actualizarUI(datosActuales);
+                const { data } = await this.supabase
+                    .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+                if (data && data.historial && data.historial[registroId]) {
+                    data.horasTrabajadas = Math.round((data.horasTrabajadas - data.historial[registroId].horas) * 10) / 10;
+                    delete data.historial[registroId];
+                    await this.supabase.from('horas_trabajo').update(data).eq('user_id', this.usuarioActual.id);
+                    this.actualizarUI(data);
+                    if (this.editingId === registroId) this.cancelarEdicion();
                 }
             },
 
-            revisarSuma() {
-                const horasTrabajadas = parseFloat(document.getElementById('horasTrabajadas').textContent);
-                const horasRestantes = parseFloat(document.getElementById('horasRestantes').textContent);
-                const suma = horasTrabajadas + horasRestantes;
-                
-                if (Math.abs(suma - this.horasAnualesCustom) < 0.1) {
-                    alert(`✅ Suma correcta!\n\nTrabajadas: ${horasTrabajadas}h\nRestantes: ${horasRestantes}h\nTotal: ${suma}h`);
-                } else {
-                    alert(`❌ Error en la suma!\n\nTrabajadas: ${horasTrabajadas}h\nRestantes: ${horasRestantes}h\nTotal: ${suma}h\nEsperado: ${this.horasAnualesCustom}h`);
-                }
-            },
-
-            toggleDarkMode() {
-                this.darkMode = !this.darkMode;
-                localStorage.setItem('darkMode', this.darkMode);
-                if (this.darkMode) {
-                    this.aplicarDarkMode();
-                } else {
-                    this.removerDarkMode();
-                }
-            },
-
-            aplicarDarkMode() {
-                document.body.classList.add('dark');
-                document.querySelector('.container').classList.add('dark');
-                document.getElementById('appHeader').classList.add('dark');
-                document.getElementById('appContent').classList.add('dark');
-                document.getElementById('optionsHeader').classList.add('dark');
-                document.getElementById('optionsContent').classList.add('dark');
-            },
-
-            removerDarkMode() {
-                document.body.classList.remove('dark');
-                document.querySelector('.container').classList.remove('dark');
-                document.getElementById('appHeader').classList.remove('dark');
-                document.getElementById('appContent').classList.remove('dark');
-                document.getElementById('optionsHeader').classList.remove('dark');
-                document.getElementById('optionsContent').classList.remove('dark');
-            },
-
-            confirmarBorrarCuenta() {
-                this.mostrarModal('⚠️ Borrar Cuenta', '¿Estás seguro? Esta acción no se puede deshacer.', this.borrarCuenta.bind(this));
-            },
-
-            async cerrarSesion() {
-                await this.supabase.auth.signOut();
-            },
-
-            mostrarCambiarHoras() {
-                const nuevasHoras = prompt('¿Cuántas horas quieres trabajar al año?', '777');
-                if (nuevasHoras !== null && !isNaN(parseFloat(nuevasHoras)) && parseFloat(nuevasHoras) > 0) {
-                    this.horasAnualesCustom = parseFloat(nuevasHoras);
-                    localStorage.setItem('horasAnuales', this.horasAnualesCustom);
-                    alert(`✅ Horas anuales cambiadas a ${this.horasAnualesCustom}h`);
-                    this.cargarDatos();
-                }
-            },
-
-            confirmarResetear() {
-                this.mostrarModal('⚠️ Resetear Contador', '¿Estás seguro? Se pondrán todas las horas a 0.', this.resetearContador.bind(this));
-            },
-
-            async resetearContador() {
-                if (!this.usuarioActual) return;
-
-                const { data: datosActuales } = await this.supabase
-                    .from('horas_trabajo')
-                    .select('*')
-                    .eq('user_id', this.usuarioActual.id)
-                    .single();
-
-                if (datosActuales) {
-                    datosActuales.horasTrabajadas = 0;
-                    datosActuales.historial = {};
-
-                    await this.supabase
-                        .from('horas_trabajo')
-                        .update(datosActuales)
-                        .eq('user_id', this.usuarioActual.id);
-
-                    this.actualizarUI(datosActuales);
-                    alert('✅ Contador reseteado a 0');
-                }
-            },
-
-            mostrarModal(titulo, mensaje, callback) {
-                document.getElementById('modalTitle').textContent = titulo;
-                document.getElementById('modalMessage').textContent = mensaje;
-                document.getElementById('modal').classList.add('show');
-                this.modalCallback = callback;
-            },
-
-            cerrarModal() {
-                document.getElementById('modal').classList.remove('show');
-                this.modalCallback = null;
-            },
-
-            async confirmarModal() {
-                if (this.modalCallback) {
-                    await this.modalCallback();
-                }
-                this.cerrarModal();
-            },
-
-            async borrarCuenta() {
-                if (!this.usuarioActual) return;
-
-                await this.supabase
-                    .from('horas_trabajo')
-                    .delete()
-                    .eq('user_id', this.usuarioActual.id);
-
-                await this.supabase.auth.admin.deleteUser(this.usuarioActual.id).catch(() => {});
-                
-                await this.supabase.auth.signOut();
+            clickNocheCompact(event) {
+                const checkbox = document.getElementById('nocheToggle');
+                checkbox.checked = !checkbox.checked;
+                this.toggleNoche();
             },
 
             toggleNoche() {
@@ -696,45 +698,10 @@
                     (hN > 0 && precio > 0) ? `Extra: ${hN}h × ${precio}€ = ${(hN * precio).toFixed(2)}€` : '';
             },
 
-            guardarPrecioNoche() {
-                const precio = parseFloat(document.getElementById('precioNocheGlobal').value) || 0;
-                this.precioNocheDefault = precio;
-                localStorage.setItem('precioNoche', precio);
-            },
-
-            async exportarDatos() {
-                if (!this.usuarioActual) return;
-                const { data } = await this.supabase
-                    .from('horas_trabajo')
-                    .select('*')
-                    .eq('user_id', this.usuarioActual.id)
-                    .single();
-
-                const historialOrdenado = Object.entries((data && data.historial) || {})
-                    .sort((a, b) => a[1].timestamp - b[1].timestamp)
-                    .map(([id, reg]) => ({ id, ...reg }));
-
-                const exportacion = {
-                    exportado: new Date().toISOString(),
-                    usuario: this.usuarioActual.email,
-                    horasAnuales: this.horasAnualesCustom,
-                    horasTrabajadas: (data && data.horasTrabajadas) || 0,
-                    horasRestantes: Math.max(0, this.horasAnualesCustom - ((data && data.horasTrabajadas) || 0)),
-                    historial: historialOrdenado
-                };
-
-                const blob = new Blob([JSON.stringify(exportacion, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                const fecha = new Date().toISOString().slice(0, 10);
-                a.href = url;
-                a.download = `horas-emt-${fecha}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-            },
-
             limpiarInput() {
                 document.getElementById('horasInput').value = '';
+                document.getElementById('horaInicio').value = '';
+                document.getElementById('horaFin').value = '';
                 document.getElementById('nocheToggle').checked = false;
                 document.getElementById('nocheExtra').classList.remove('visible');
                 document.getElementById('horasNocturnas').value = '';
@@ -743,57 +710,280 @@
                 this.establecerFechaHoy();
             },
 
-            actualizarUI(datos) {
-                const horasRestantes = Math.max(0, this.horasAnualesCustom - datos.horasTrabajadas);
-                const porcentajeCompleto = (datos.horasTrabajadas / this.horasAnualesCustom) * 100;
-
-                document.getElementById('horasTrabajadas').textContent = datos.horasTrabajadas.toFixed(1);
-                document.getElementById('horasRestantes').textContent = horasRestantes.toFixed(1);
-                document.getElementById('porcentaje').textContent = Math.min(Math.round(porcentajeCompleto), 100);
-                document.getElementById('progressFill').style.width = Math.min(porcentajeCompleto, 100) + '%';
-
-                if (porcentajeCompleto >= 100) {
-                    document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #27ae60 0%, #229954 100%)';
+            revisarSuma() {
+                const trabajadas = parseFloat(document.getElementById('horasTrabajadas').textContent);
+                const restantes = parseFloat(document.getElementById('horasRestantes').textContent);
+                const suma = trabajadas + restantes;
+                if (Math.abs(suma - this.horasAnualesCustom) < 0.1) {
+                    alert(`✅ Suma correcta!\n\nTrabajadas: ${trabajadas}h\nRestantes: ${restantes}h\nTotal: ${suma}h`);
+                } else {
+                    alert(`❌ Error en la suma!\n\nTrabajadas: ${trabajadas}h\nRestantes: ${restantes}h\nTotal: ${suma}h\nEsperado: ${this.horasAnualesCustom}h`);
                 }
+            },
 
+            toggleDarkMode() {
+                this.darkMode = !this.darkMode;
+                localStorage.setItem('darkMode', this.darkMode);
+                this.darkMode ? this.aplicarDarkMode() : this.removerDarkMode();
+            },
+
+            aplicarDarkMode() {
+                document.body.classList.add('dark');
+                document.querySelector('.container').classList.add('dark');
+                document.getElementById('appHeader').classList.add('dark');
+                document.getElementById('appContent').classList.add('dark');
+                document.getElementById('optionsHeader').classList.add('dark');
+                document.getElementById('optionsContent').classList.add('dark');
+                document.getElementById('modalContent').classList.add('dark');
+            },
+
+            removerDarkMode() {
+                document.body.classList.remove('dark');
+                document.querySelector('.container').classList.remove('dark');
+                document.getElementById('appHeader').classList.remove('dark');
+                document.getElementById('appContent').classList.remove('dark');
+                document.getElementById('optionsHeader').classList.remove('dark');
+                document.getElementById('optionsContent').classList.remove('dark');
+                document.getElementById('modalContent').classList.remove('dark');
+            },
+
+            guardarPrecioNoche() {
+                const precio = parseFloat(document.getElementById('precioNocheGlobal').value) || 0;
+                this.precioNocheDefault = precio;
+                localStorage.setItem('precioNoche', precio);
+            },
+
+            mostrarCambiarHoras() {
+                const nuevasHoras = prompt('¿Cuántas horas quieres trabajar al año?', this.horasAnualesCustom);
+                if (nuevasHoras !== null && !isNaN(parseFloat(nuevasHoras)) && parseFloat(nuevasHoras) > 0) {
+                    this.horasAnualesCustom = parseFloat(nuevasHoras);
+                    localStorage.setItem('horasAnuales', this.horasAnualesCustom);
+                    document.getElementById('horasAnualesDisplay').textContent = this.horasAnualesCustom + 'h';
+                    alert(`✅ Horas anuales cambiadas a ${this.horasAnualesCustom}h`);
+                    this.cargarDatos();
+                }
+            },
+
+            confirmarResetear() {
+                this.mostrarModal('⚠️ Resetear Contador', '¿Estás seguro? Se pondrán todas las horas a 0.', this.resetearContador.bind(this));
+            },
+
+            async resetearContador() {
+                if (!this.usuarioActual) return;
+                const { data } = await this.supabase
+                    .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+                if (data) {
+                    data.horasTrabajadas = 0;
+                    data.historial = {};
+                    await this.supabase.from('horas_trabajo').update(data).eq('user_id', this.usuarioActual.id);
+                    this.actualizarUI(data);
+                    alert('✅ Contador reseteado a 0');
+                }
+            },
+
+            mostrarModal(titulo, mensaje, callback) {
+                document.getElementById('modalTitle').textContent = titulo;
+                document.getElementById('modalMessage').textContent = mensaje;
+                document.getElementById('modal').classList.add('show');
+                this.modalCallback = callback;
+            },
+
+            cerrarModal() {
+                document.getElementById('modal').classList.remove('show');
+                this.modalCallback = null;
+            },
+
+            async confirmarModal() {
+                if (this.modalCallback) await this.modalCallback();
+                this.cerrarModal();
+            },
+
+            confirmarBorrarCuenta() {
+                this.mostrarModal('⚠️ Borrar Cuenta', '¿Estás seguro? Esta acción no se puede deshacer.', this.borrarCuenta.bind(this));
+            },
+
+            async borrarCuenta() {
+                if (!this.usuarioActual) return;
+                await this.supabase.from('horas_trabajo').delete().eq('user_id', this.usuarioActual.id);
+                await this.supabase.auth.admin.deleteUser(this.usuarioActual.id).catch(() => {});
+                await this.supabase.auth.signOut();
+            },
+
+            async cerrarSesion() {
+                await this.supabase.auth.signOut();
+            },
+
+            actualizarUI(datos) {
+                const restantes = Math.max(0, this.horasAnualesCustom - datos.horasTrabajadas);
+                const pct = (datos.horasTrabajadas / this.horasAnualesCustom) * 100;
+                document.getElementById('horasTrabajadas').textContent = datos.horasTrabajadas.toFixed(1);
+                document.getElementById('horasRestantes').textContent = restantes.toFixed(1);
+                document.getElementById('porcentaje').textContent = Math.min(Math.round(pct), 100);
+                document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
+                if (pct >= 100) document.getElementById('progressFill').style.background = 'linear-gradient(90deg, #27ae60 0%, #229954 100%)';
                 this.actualizarHistorial(datos.historial || {});
             },
 
             actualizarHistorial(historial) {
-                const historialList = document.getElementById('historialList');
-                historialList.innerHTML = '';
+                const list = document.getElementById('historialList');
+                list.innerHTML = '';
                 const registros = Object.entries(historial).sort((a, b) => b[1].timestamp - a[1].timestamp);
-
                 if (registros.length === 0) {
-                    historialList.innerHTML = '<li class="empty-state">Sin registros</li>';
+                    list.innerHTML = '<li class="empty-state">Sin registros</li>';
                     return;
                 }
-
                 registros.forEach(([id, reg]) => {
                     const li = document.createElement('li');
                     const nocheInfo = reg.horasNocturnas
                         ? `<span class="historial-noche">🌙 ${reg.horasNocturnas}h noct. · +${reg.extraNoche?.toFixed(2)}€</span>`
                         : '';
+                    const horario = (reg.horaInicio && reg.horaFin)
+                        ? `<span class="historial-horario">${reg.horaInicio}–${reg.horaFin}</span>`
+                        : '';
                     li.innerHTML = `
                         <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
-                            <div style="display:flex;align-items:center;gap:6px;">
+                            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                                 <span class="historial-fecha">${reg.fecha}</span>
+                                ${horario}
                                 <span class="historial-horas">${reg.horas}h</span>
                             </div>
                             ${nocheInfo}
                         </div>
-                        <button class="historial-delete" onclick="app.borrarRegistro('${id}')">✕</button>
+                        <div class="historial-actions">
+                            <button class="historial-edit" onclick="app.editarRegistro('${id}', ${JSON.stringify(reg).replace(/'/g, '&#39;')})">✏️</button>
+                            <button class="historial-delete" onclick="app.borrarRegistro('${id}')">✕</button>
+                        </div>
                     `;
-                    historialList.appendChild(li);
+                    list.appendChild(li);
                 });
+            },
+
+            // GPS
+            guardarUbicacionTrabajo() {
+                if (!navigator.geolocation) { alert('❌ Tu dispositivo no soporta geolocalización'); return; }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        localStorage.setItem('workLocation', JSON.stringify({ lat: pos.coords.latitude, lng: pos.coords.longitude }));
+                        this.actualizarEstadoGPS();
+                        alert('✅ Ubicación del trabajo guardada. La app te avisará cuando llegues.');
+                    },
+                    () => alert('❌ No se pudo obtener la ubicación. Activa el GPS e inténtalo de nuevo.')
+                );
+            },
+
+            borrarUbicacionTrabajo() {
+                localStorage.removeItem('workLocation');
+                this.actualizarEstadoGPS();
+                document.getElementById('workBanner').classList.remove('show');
+            },
+
+            actualizarEstadoGPS() {
+                const loc = localStorage.getItem('workLocation');
+                const el = document.getElementById('gpsStatus');
+                const borrarBtn = document.getElementById('borrarGpsBtn');
+                if (el) {
+                    if (loc) {
+                        el.textContent = '✅ Ubicación guardada';
+                        el.className = 'gps-status';
+                        if (borrarBtn) borrarBtn.style.display = '';
+                    } else {
+                        el.textContent = 'Sin ubicación guardada';
+                        el.className = 'gps-status none';
+                        if (borrarBtn) borrarBtn.style.display = 'none';
+                    }
+                }
+            },
+
+            verificarUbicacion() {
+                const workLoc = JSON.parse(localStorage.getItem('workLocation') || 'null');
+                if (!workLoc || !navigator.geolocation) return;
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const dist = this.calcularDistancia(pos.coords.latitude, pos.coords.longitude, workLoc.lat, workLoc.lng);
+                    if (dist < 300) document.getElementById('workBanner').classList.add('show');
+                }, () => {});
+            },
+
+            calcularDistancia(lat1, lng1, lat2, lng2) {
+                const R = 6371000;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLng = (lng2 - lng1) * Math.PI / 180;
+                const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+                return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            },
+
+            registrarJornadaHoy() {
+                document.getElementById('workBanner').classList.remove('show');
+                this.establecerFechaHoy();
+                this.mostrarApp();
+                document.getElementById('horasInput').focus();
+            },
+
+            // Backup
+            async exportarDatos() {
+                if (!this.usuarioActual) return;
+                const { data } = await this.supabase
+                    .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+                const historial = Object.entries((data && data.historial) || {})
+                    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+                    .map(([id, reg]) => ({ id, ...reg }));
+                const exportacion = {
+                    exportado: new Date().toISOString(),
+                    usuario: this.usuarioActual.email,
+                    horasAnuales: this.horasAnualesCustom,
+                    horasTrabajadas: (data && data.horasTrabajadas) || 0,
+                    horasRestantes: Math.max(0, this.horasAnualesCustom - ((data && data.horasTrabajadas) || 0)),
+                    historial
+                };
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(exportacion, null, 2)], { type: 'application/json' }));
+                a.download = `horas-emt-${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(a.href);
+            },
+
+            async importarDatos() {
+                if (!this.usuarioActual) return;
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json,application/json';
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    try {
+                        const datos = JSON.parse(await file.text());
+                        if (datos.horasTrabajadas === undefined || !datos.historial) {
+                            alert('❌ Archivo no válido. Usa un archivo exportado desde esta app.'); return;
+                        }
+                        const historialObj = {};
+                        if (Array.isArray(datos.historial)) {
+                            datos.historial.forEach(({ id, ...rest }) => { historialObj[id] = rest; });
+                        } else {
+                            Object.assign(historialObj, datos.historial);
+                        }
+                        const restored = { horasTrabajadas: datos.horasTrabajadas, historial: historialObj };
+                        const { data: existing } = await this.supabase
+                            .from('horas_trabajo').select('id').eq('user_id', this.usuarioActual.id).single();
+                        if (existing) {
+                            await this.supabase.from('horas_trabajo').update(restored).eq('user_id', this.usuarioActual.id);
+                        } else {
+                            await this.supabase.from('horas_trabajo').insert([{ user_id: this.usuarioActual.id, ...restored }]);
+                        }
+                        if (datos.horasAnuales) {
+                            this.horasAnualesCustom = datos.horasAnuales;
+                            localStorage.setItem('horasAnuales', datos.horasAnuales);
+                        }
+                        this.actualizarUI(restored);
+                        alert('✅ Copia de seguridad restaurada correctamente');
+                    } catch(err) {
+                        alert('❌ Error al leer el archivo: ' + err.message);
+                    }
+                };
+                input.click();
             }
         };
 
         let checkInterval = setInterval(() => {
-            if (window.supabase) {
-                clearInterval(checkInterval);
-                app.init();
-            }
+            if (window.supabase) { clearInterval(checkInterval); app.init(); }
         }, 100);
 
         // PWA install
@@ -804,7 +994,6 @@
         function _showInstallBanner(ios) {
             if (_isStandalone) return;
             const banner = document.getElementById('installBanner');
-            if (!banner) return;
             const bannerBtn = document.getElementById('installBannerBtn');
             if (ios) {
                 document.getElementById('installBannerMsg').textContent = 'Toca Compartir ↑ → "Añadir a inicio"';
@@ -813,9 +1002,9 @@
                 document.getElementById('installBannerMsg').textContent = 'Instala la app para acceso rápido';
                 if (bannerBtn) bannerBtn.style.display = '';
             }
-            banner.classList.add('show');
+            if (banner) banner.classList.add('show');
             const btn = document.getElementById('installBtn');
-            if (btn) btn.style.display = 'block';
+            if (btn) btn.style.display = 'flex';
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -837,7 +1026,7 @@
                 if (_isIOS) {
                     alert('En Safari:\n1. Toca el botón Compartir (□↑)\n2. Selecciona "Añadir a pantalla de inicio"\n3. Pulsa "Añadir"');
                 } else {
-                    alert('Usa el menú del navegador → "Instalar app" o "Añadir a pantalla de inicio".');
+                    alert('Usa el menú del navegador → "Instalar app".');
                 }
                 return;
             }

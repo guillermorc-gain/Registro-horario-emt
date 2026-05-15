@@ -351,9 +351,8 @@ const app = {
         document.getElementById('optionsScreen').classList.add('active');
         document.getElementById('darkModeToggle').checked = this.darkMode;
         document.getElementById('horasAnualesDisplay').textContent = this.horasAnualesCustom + 'h';
-        document.getElementById('displayNameInput').value = localStorage.getItem('displayName') || '';
         document.getElementById('usernameInput').value    = localStorage.getItem('username') || '';
-        document.getElementById('perfilEmail').textContent = this.usuarioActual?.email || '';
+        document.getElementById('perfilEmail').textContent = this.usuarioActual?.email || '(sin correo)';
         this.actualizarEstadoGPS();
         this._renderWorkLocations();
         this._actualizarAvatarPreview();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horas-v5';
+const CACHE_NAME = 'horas-v6';
 const BASE_PATH = '/';
 
 const urlsToCache = [
@@ -7,7 +7,8 @@ const urlsToCache = [
   BASE_PATH + 'app.js',
   BASE_PATH + 'manifest.json',
   BASE_PATH + 'icons/icon-192.png',
-  BASE_PATH + 'icons/icon-512.png'
+  BASE_PATH + 'icons/icon-512.png',
+  BASE_PATH + 'icons/icon.svg'
 ];
 
 self.addEventListener('install', event => {

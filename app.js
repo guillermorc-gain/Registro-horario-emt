@@ -246,21 +246,16 @@ const app = {
 
     async guardarPerfil() {
         if (!this.usuarioActual) return;
-        const displayName = document.getElementById('displayNameInput').value.trim();
-        const username    = document.getElementById('usernameInput').value.trim().toLowerCase();
+        const username = document.getElementById('usernameInput').value.trim().toLowerCase();
 
-        // Save locally first — always works offline
-        if (displayName) localStorage.setItem('displayName', displayName);
         if (username) {
             localStorage.setItem('username', username);
             localStorage.setItem('u2e_' + username, this.usuarioActual.email);
         }
         this.actualizarBotonesPerfil();
 
-        // Sync to Supabase in background (non-blocking)
         const updateData = {};
-        if (displayName) updateData.display_name = displayName;
-        if (username)    updateData.username = username;
+        if (username) updateData.username = username;
         const emoji = localStorage.getItem('avatarEmoji');
         const bg    = localStorage.getItem('avatarBg');
         if (emoji) { updateData.avatar_emoji = emoji; updateData.avatar_bg = bg || '#667eea'; }
@@ -396,8 +391,9 @@ const app = {
         const extraNoche     = Math.round(horasNocturnas * precioNoche * 100) / 100;
         if (esNoche && horasNocturnas > horas) { alert('❌ Las horas nocturnas no pueden superar las horas totales'); return; }
 
-        const { data: actual } = await this.supabase
-            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: _rows } = await this.supabase
+            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        const actual = _rows?.[0] ?? null;
         const datos = actual || { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
@@ -442,8 +438,9 @@ const app = {
 
         if (!fecha || isNaN(horas) || horas <= 0) { alert('❌ Introduce fecha y horas válidas'); return; }
 
-        const { data: actual } = await this.supabase
-            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: _rows } = await this.supabase
+            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        const actual = _rows?.[0] ?? null;
         const datos = actual || { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
@@ -493,8 +490,9 @@ const app = {
     async borrarRegistro(id) {
         if (!this.usuarioActual) return;
         if (!confirm('¿Borrar este registro?')) return;
-        const { data } = await this.supabase
-            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: _br } = await this.supabase
+            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        const data = _br?.[0] ?? null;
         if (data && data.historial && data.historial[id]) {
             data.horasTrabajadas = Math.round((data.horasTrabajadas - data.historial[id].horas) * 10) / 10;
             delete data.historial[id];
@@ -766,7 +764,8 @@ const app = {
 
     async resetearContador() {
         if (!this.usuarioActual) return;
-        const { data } = await this.supabase.from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: _rr } = await this.supabase.from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        const data = _rr?.[0] ?? null;
         if (data) {
             data.horasTrabajadas = 0; data.historial = {};
             await this.supabase.from('horas_trabajo').update(data).eq('user_id', this.usuarioActual.id);
@@ -790,6 +789,17 @@ const app = {
         if (!this.usuarioActual) return;
         await this.supabase.from('horas_trabajo').delete().eq('user_id', this.usuarioActual.id);
         await this.supabase.auth.signOut();
+    },
+
+    async cambiarPassword() {
+        const nueva = prompt('Nueva contraseña (mínimo 6 caracteres):');
+        if (!nueva) return;
+        if (nueva.length < 6) { alert('❌ Mínimo 6 caracteres'); return; }
+        const confirmar = prompt('Repite la nueva contraseña:');
+        if (nueva !== confirmar) { alert('❌ Las contraseñas no coinciden'); return; }
+        const { error } = await this.supabase.auth.updateUser({ password: nueva });
+        if (error) alert('❌ Error: ' + error.message);
+        else alert('✅ Contraseña cambiada correctamente');
     },
 
     async cerrarSesion() {
@@ -906,7 +916,8 @@ const app = {
 
     async exportarDatos() {
         if (!this.usuarioActual) return;
-        const { data } = await this.supabase.from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: rows } = await this.supabase.from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        const data = rows?.[0] || null;
         const historial = Object.entries((data?.historial) || {})
             .sort((a, b) => a[1].timestamp - b[1].timestamp)
             .map(([id, reg]) => ({ id, ...reg }));
@@ -929,8 +940,8 @@ const app = {
                 if (Array.isArray(datos.historial)) datos.historial.forEach(({ id, ...rest }) => { historialObj[id] = rest; });
                 else Object.assign(historialObj, datos.historial);
                 const restored = { horasTrabajadas: datos.horasTrabajadas, historial: historialObj };
-                const { data: ex } = await this.supabase.from('horas_trabajo').select('id').eq('user_id', this.usuarioActual.id).single();
-                if (ex) await this.supabase.from('horas_trabajo').update(restored).eq('user_id', this.usuarioActual.id);
+                const { data: exRows } = await this.supabase.from('horas_trabajo').select('id').eq('user_id', this.usuarioActual.id).limit(1);
+                if (exRows && exRows.length > 0) await this.supabase.from('horas_trabajo').update(restored).eq('user_id', this.usuarioActual.id);
                 else    await this.supabase.from('horas_trabajo').insert([{ user_id: this.usuarioActual.id, ...restored }]);
                 if (datos.horasAnuales) { this.horasAnualesCustom = datos.horasAnuales; localStorage.setItem('horasAnuales', datos.horasAnuales); }
                 this.actualizarUI(restored);

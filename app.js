@@ -357,8 +357,14 @@ const app = {
 
     async cargarDatos() {
         if (!this.usuarioActual) return;
-        const { data } = await this.supabase
-            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).single();
+        const { data: rows, error } = await this.supabase
+            .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
+        if (error) {
+            console.error('Error cargando datos Supabase:', error.message);
+            alert('⚠️ Error al cargar datos: ' + error.message + '\n\nUsuario: ' + this.usuarioActual.email);
+            return;
+        }
+        const data = rows && rows.length > 0 ? rows[0] : null;
         this.actualizarUI(data || { horasTrabajadas: 0, historial: {} });
         this.verificarUbicacion();
     },
@@ -773,7 +779,11 @@ const app = {
         await this.supabase.auth.signOut();
     },
 
-    async cerrarSesion() { await this.supabase.auth.signOut(); },
+    async cerrarSesion() {
+        await this.supabase.auth.signOut().catch(() => {});
+        this.usuarioActual = null;
+        this.mostrarAuth();
+    },
 
     // ── GPS / LOCATIONS ───────────────────────────────────────────
 

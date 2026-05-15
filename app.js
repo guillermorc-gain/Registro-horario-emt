@@ -844,9 +844,34 @@ const app = {
 
     borrarUbicacion(index) {
         const locs = this._getWorkLocations();
+        if (!confirm(`¿Eliminar "${locs[index].name}"?`)) return;
         locs.splice(index, 1);
         this._saveWorkLocations(locs);
         if (locs.length === 0) document.getElementById('workBanner').classList.remove('show');
+        this.actualizarEstadoGPS();
+        this._renderWorkLocations();
+    },
+
+    async editarUbicacion(index) {
+        const locs = this._getWorkLocations();
+        const loc  = locs[index];
+        const nuevoNombre = prompt('Nombre de la ubicación:', loc.name);
+        if (nuevoNombre === null) return;
+        if (!nuevoNombre.trim()) { alert('❌ El nombre no puede estar vacío'); return; }
+        loc.name = nuevoNombre.trim();
+
+        const actualizarGPS = confirm('¿Actualizar también las coordenadas GPS a tu posición actual?');
+        if (actualizarGPS) {
+            await new Promise((resolve) => {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { loc.lat = pos.coords.latitude; loc.lng = pos.coords.longitude; resolve(); },
+                    ()    => { alert('❌ No se pudo obtener la ubicación'); resolve(); }
+                );
+            });
+        }
+
+        locs[index] = loc;
+        this._saveWorkLocations(locs);
         this.actualizarEstadoGPS();
         this._renderWorkLocations();
     },
@@ -859,11 +884,24 @@ const app = {
             container.innerHTML = '<div style="font-size:12px;color:#95a5a6;padding:4px 0;">Sin ubicaciones guardadas</div>';
             return;
         }
-        container.innerHTML = locs.map((loc, i) => `
-            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #efefef;gap:8px;">
-                <span style="font-size:13px;font-weight:600;">📍 ${loc.name}</span>
-                <button onclick="app.borrarUbicacion(${i})" style="background:#e74c3c;color:white;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:600;">🗑️</button>
-            </div>`).join('');
+        const isDark = this.darkMode;
+        container.innerHTML = locs.map((loc, i) => {
+            const latStr = loc.lat.toFixed(5);
+            const lngStr = loc.lng.toFixed(5);
+            const mapUrl = `https://www.google.com/maps?q=${loc.lat},${loc.lng}`;
+            return `
+            <div style="background:${isDark?'#111827':'#f8f9ff'};border:1px solid ${isDark?'#2d3561':'#e0e4ff'};border-radius:10px;padding:10px 12px;margin-bottom:8px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <span style="font-size:13px;font-weight:700;color:${isDark?'#e0e0e0':'#2c3e50'};">📍 ${loc.name}</span>
+                    <div style="display:flex;gap:6px;">
+                        <button onclick="app.editarUbicacion(${i})" style="background:#667eea;color:white;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;">✏️ Editar</button>
+                        <button onclick="app.borrarUbicacion(${i})" style="background:#e74c3c;color:white;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:600;">🗑️</button>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:#7f8c8d;margin-bottom:4px;">🌐 ${latStr}, ${lngStr}</div>
+                <a href="${mapUrl}" target="_blank" rel="noopener" style="font-size:11px;color:#667eea;text-decoration:none;font-weight:600;">📌 Ver en Google Maps →</a>
+            </div>`;
+        }).join('');
     },
 
     actualizarEstadoGPS() {

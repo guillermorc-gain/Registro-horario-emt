@@ -276,6 +276,7 @@
                 <button type="button" id="installBtn" class="btn-secondary" onclick="app.instalarApp()" style="display:none;">📲 Instalar aplicación</button>
                 <button type="button" class="btn-secondary" onclick="app.revisarSuma()">🔍 Revisar Suma</button>
                 <button type="button" class="btn-secondary" onclick="app.mostrarCambiarHoras()">⚙️ Cambiar Horas Anuales</button>
+                <button type="button" class="btn-secondary" onclick="app.exportarDatos()">💾 Exportar datos JSON</button>
                 <button type="button" onclick="app.cerrarSesion()" style="width:100%;padding:11px;background:#003A99;color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-size:13px;font-family:inherit;">🚪 Cerrar Sesión</button>
                 <button type="button" class="btn-danger" onclick="app.confirmarResetear()">🔄 Resetear Contador</button>
                 <button type="button" class="btn-danger" onclick="app.confirmarBorrarCuenta()">🗑️ Borrar Cuenta</button>
@@ -699,6 +700,37 @@
                 const precio = parseFloat(document.getElementById('precioNocheGlobal').value) || 0;
                 this.precioNocheDefault = precio;
                 localStorage.setItem('precioNoche', precio);
+            },
+
+            async exportarDatos() {
+                if (!this.usuarioActual) return;
+                const { data } = await this.supabase
+                    .from('horas_trabajo')
+                    .select('*')
+                    .eq('user_id', this.usuarioActual.id)
+                    .single();
+
+                const historialOrdenado = Object.entries((data && data.historial) || {})
+                    .sort((a, b) => a[1].timestamp - b[1].timestamp)
+                    .map(([id, reg]) => ({ id, ...reg }));
+
+                const exportacion = {
+                    exportado: new Date().toISOString(),
+                    usuario: this.usuarioActual.email,
+                    horasAnuales: this.horasAnualesCustom,
+                    horasTrabajadas: (data && data.horasTrabajadas) || 0,
+                    horasRestantes: Math.max(0, this.horasAnualesCustom - ((data && data.horasTrabajadas) || 0)),
+                    historial: historialOrdenado
+                };
+
+                const blob = new Blob([JSON.stringify(exportacion, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const fecha = new Date().toISOString().slice(0, 10);
+                a.href = url;
+                a.download = `horas-emt-${fecha}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
             },
 
             limpiarInput() {

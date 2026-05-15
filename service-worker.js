@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horas-v3';
+const CACHE_NAME = 'horas-v4';
 const BASE_PATH = '/'; // ajusta si no estás en raíz del dominio
 
 const urlsToCache = [

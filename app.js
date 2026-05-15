@@ -235,20 +235,24 @@ const app = {
         if (!this.usuarioActual) return;
         const displayName = document.getElementById('displayNameInput').value.trim();
         const username    = document.getElementById('usernameInput').value.trim().toLowerCase();
-        const updateData  = {};
-        if (displayName) updateData.display_name = displayName;
-        if (username)    updateData.username = username;
-        const emoji = localStorage.getItem('avatarEmoji');
-        const bg    = localStorage.getItem('avatarBg');
-        if (emoji) { updateData.avatar_emoji = emoji; updateData.avatar_bg = bg || '#667eea'; }
-        const { error } = await this.supabase.auth.updateUser({ data: updateData });
-        if (error) { alert('❌ Error al guardar: ' + error.message); return; }
+
+        // Save locally first — always works offline
         if (displayName) localStorage.setItem('displayName', displayName);
         if (username) {
             localStorage.setItem('username', username);
             localStorage.setItem('u2e_' + username, this.usuarioActual.email);
         }
         this.actualizarBotonesPerfil();
+
+        // Sync to Supabase in background (non-blocking)
+        const updateData = {};
+        if (displayName) updateData.display_name = displayName;
+        if (username)    updateData.username = username;
+        const emoji = localStorage.getItem('avatarEmoji');
+        const bg    = localStorage.getItem('avatarBg');
+        if (emoji) { updateData.avatar_emoji = emoji; updateData.avatar_bg = bg || '#667eea'; }
+        this.supabase.auth.updateUser({ data: updateData }).catch(() => {});
+
         alert('✅ Perfil guardado');
     },
 

@@ -351,7 +351,11 @@
                     </div>
                     <div class="input-group">
                         <label>Fin</label>
-                        <input type="time" id="horaFin" oninput="app.calcularHorasPorTiempo()">
+                        <input type="time" id="horaFin" oninput="app.calcularHorasPorTiempo();app.guardarUltimaHoraFin()">
+                    </div>
+                    <div class="input-group" style="flex:0.7;">
+                        <label>Horas</label>
+                        <input type="number" id="horasInput" min="0" step="0.5" placeholder="8">
                     </div>
                     <div class="noche-compact" onclick="app.clickNocheCompact()" title="Nocturno">
                         <span>🌙</span>
@@ -367,10 +371,6 @@
                         <div class="input-group">
                             <label>€/h noct.</label>
                             <input type="number" id="precioNoche" min="0" step="0.01" placeholder="1.50" oninput="app.calcularExtra()">
-                        </div>
-                        <div class="input-group" style="flex:0.7;">
-                            <label>Horas</label>
-                            <input type="number" id="horasInput" min="0" step="0.5" placeholder="8">
                         </div>
                     </div>
                     <div class="noche-resumen" id="nocheResumen"></div>

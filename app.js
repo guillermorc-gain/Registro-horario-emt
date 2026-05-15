@@ -89,6 +89,8 @@ const app = {
         this.actualizarEstadoGPS();
         const lastInicio = localStorage.getItem('lastHoraInicio');
         if (lastInicio) document.getElementById('horaInicio').value = lastInicio;
+        const lastFin = localStorage.getItem('lastHoraFin');
+        if (lastFin) document.getElementById('horaFin').value = lastFin;
     },
 
     // ── NIGHT HOURS AUTO-CALC ─────────────────────────────────────
@@ -423,6 +425,8 @@ const app = {
         }
 
         if (horaInicio) localStorage.setItem('lastHoraInicio', horaInicio);
+        const horaFinVal = document.getElementById('horaFin').value;
+        if (horaFinVal) localStorage.setItem('lastHoraFin', horaFinVal);
         this.actualizarUI(datos);
         this.cancelarEdicion();
     },
@@ -558,6 +562,11 @@ const app = {
         if (val) localStorage.setItem('lastHoraInicio', val);
     },
 
+    guardarUltimaHoraFin() {
+        const val = document.getElementById('horaFin').value;
+        if (val) localStorage.setItem('lastHoraFin', val);
+    },
+
     limpiarInput() {
         document.getElementById('horasInput').value = '';
         document.getElementById('horaFin').value    = '';
@@ -568,6 +577,7 @@ const app = {
         document.getElementById('nocheResumen').textContent = '';
         this.establecerFechaHoy();
         document.getElementById('horaInicio').value = localStorage.getItem('lastHoraInicio') || '';
+        document.getElementById('horaFin').value    = localStorage.getItem('lastHoraFin') || '';
     },
 
     // ── HISTORIAL MODAL ───────────────────────────────────────────

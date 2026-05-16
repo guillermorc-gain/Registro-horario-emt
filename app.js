@@ -321,7 +321,12 @@ const app = {
         }
         this.mostrarMensaje('⏳ Entrando...', 'success');
         const { error } = await this.supabase.auth.signInWithPassword({ email, password });
-        if (error) { this.mostrarMensaje('❌ ' + error.message, 'error'); }
+        if (error) {
+            const msg = error.message.includes('Email not confirmed')
+                ? '📧 Confirma tu email primero. Revisa tu bandeja de entrada.'
+                : '❌ ' + error.message;
+            this.mostrarMensaje(msg, 'error');
+        }
         else { document.getElementById('loginEmail').value = ''; document.getElementById('loginPassword').value = ''; }
     },
 
@@ -332,16 +337,25 @@ const app = {
         if (!email || !pw1 || !pw2) { this.mostrarMensaje('❌ Completa todos los campos', 'error'); return; }
         if (pw1 !== pw2)    { this.mostrarMensaje('❌ Las contraseñas no coinciden', 'error'); return; }
         if (pw1.length < 6) { this.mostrarMensaje('❌ Mínimo 6 caracteres', 'error'); return; }
-        const { error } = await this.supabase.auth.signUp({ email, password: pw1 });
+        const { data, error } = await this.supabase.auth.signUp({ email, password: pw1 });
         if (error) { this.mostrarMensaje('❌ ' + error.message, 'error'); }
-        else {
-            this.mostrarMensaje('✅ Cuenta creada. Inicia sesión.', 'success');
+        else if (data?.session) {
+            // Auto-confirmed (email confirmation disabled in Supabase)
+            this.mostrarMensaje('✅ Cuenta creada. Entrando...', 'success');
+            setTimeout(() => {
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+                document.getElementById('registerPassword2').value = '';
+            }, 1000);
+        } else {
+            // Email confirmation required
+            this.mostrarMensaje('📧 Revisa tu email y confirma tu cuenta antes de iniciar sesión.', 'success');
             setTimeout(() => {
                 document.getElementById('registerEmail').value = '';
                 document.getElementById('registerPassword').value = '';
                 document.getElementById('registerPassword2').value = '';
                 this.toggleAuth();
-            }, 2000);
+            }, 4000);
         }
     },
 

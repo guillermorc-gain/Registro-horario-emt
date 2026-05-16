@@ -71,23 +71,24 @@ const app = {
     },
 
     async setupAuth() {
-        // Restore existing session immediately on load
-        const { data: { session: existing } } = await this.supabase.auth.getSession();
-        if (existing) {
-            this._aplicarSesion(existing.user);
-        } else {
-            this.mostrarAuth();
-        }
-
-        // Keep listening for auth changes (login, logout, token refresh)
+        // Listen for auth changes first so we don't miss events
         this.supabase.auth.onAuthStateChange((event, session) => {
-            if (session && event !== 'TOKEN_REFRESHED') {
+            if (session) {
                 this._aplicarSesion(session.user);
-            } else if (!session) {
+            } else if (event === 'SIGNED_OUT') {
+                // Only redirect to auth on explicit sign-out
                 this.usuarioActual = null;
                 this.mostrarAuth();
             }
         });
+
+        // Then check for an existing/refreshable session
+        const { data: { session: existing } } = await this.supabase.auth.getSession();
+        if (existing) {
+            this._aplicarSesion(existing.user);
+        } else if (!this.usuarioActual) {
+            this.mostrarAuth();
+        }
     },
 
     setupUI() {
@@ -396,8 +397,7 @@ const app = {
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         if (error) {
             console.error('Error cargando datos Supabase:', error.message);
-            alert('⚠️ Error al cargar datos: ' + error.message + '\n\nUsuario: ' + this.usuarioActual.email);
-            return;
+            this.mostrarMensaje('⚠️ Sin conexión — mostrando datos locales', 'error');
         }
         const data = rows && rows.length > 0 ? rows[0] : null;
         this.actualizarUI(data || { horasTrabajadas: 0, historial: {} });

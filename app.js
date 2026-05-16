@@ -21,6 +21,7 @@ const app = {
     precioNocheDefault: parseFloat(localStorage.getItem('precioNoche')) || 0,
     modalCallback: null,
     editingId: null,
+    prActivo: false,
     _historialMap: {},
     _historialFull: {},
 
@@ -414,7 +415,7 @@ const app = {
         const horaInicio     = document.getElementById('horaInicio').value;
         const horaFin        = document.getElementById('horaFin').value;
         const esNoche        = document.getElementById('nocheToggle').checked;
-        const esPR           = document.getElementById('prToggle').checked;
+        const esPR           = this.prActivo;
         const horasNocturnas = esNoche ? (parseFloat(document.getElementById('horasNocturnas').value) || 0) : 0;
         const precioNoche    = esNoche ? (parseFloat(document.getElementById('precioNoche').value) || 0) : 0;
         const extraNoche     = Math.round(horasNocturnas * precioNoche * 100) / 100;
@@ -551,10 +552,9 @@ const app = {
     },
 
     clickPrCompact() {
-        const cb  = document.getElementById('prToggle');
-        const btn = document.getElementById('prCompact');
-        cb.checked = !cb.checked;
-        btn.classList.toggle('active', cb.checked);
+        this.prActivo = !this.prActivo;
+        document.getElementById('prCompact').classList.toggle('active', this.prActivo);
+        document.getElementById('prToggle').checked = this.prActivo;
     },
 
     toggleNoche() {
@@ -619,8 +619,9 @@ const app = {
         document.getElementById('precioNoche').value    = '';
         document.getElementById('nocheResumen').textContent = '';
         document.getElementById('nocheToggle').checked = false;
-        document.getElementById('prToggle').checked = false;
+        this.prActivo = false;
         document.getElementById('prCompact').classList.remove('active');
+        document.getElementById('prToggle').checked = false;
         if (lastInicio && lastFin) this.calcularHorasPorTiempo();
         else document.getElementById('horasInput').value = '';
     },

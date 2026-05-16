@@ -348,11 +348,13 @@
             <!-- Input -->
             <div class="input-section" id="inputSection">
                 <div id="editLabel" class="edit-label" style="display:none;">✏️ Editando en pantalla</div>
-                <div class="input-row">
-                    <div class="input-group" style="flex:1.2;">
+                <div class="input-row" style="margin-bottom:6px;">
+                    <div class="input-group" style="flex:1;">
                         <label>Fecha</label>
                         <input type="date" id="fechaInput" oninput="app.calcularHorasPorTiempo()" onchange="app.calcularHorasPorTiempo()">
                     </div>
+                </div>
+                <div class="input-row">
                     <div class="input-group">
                         <label>Inicio</label>
                         <input type="time" id="horaInicio" oninput="app.calcularHorasPorTiempo();app.guardarUltimaHoraInicio()">

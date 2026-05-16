@@ -999,21 +999,60 @@ const app = {
         const json = JSON.stringify({ exportado: new Date().toISOString(), usuario: this.usuarioActual.email, horasAnuales: this.horasAnualesCustom, horasTrabajadas: data?.horasTrabajadas||0, historial }, null, 2);
         const filename = `horas-emt-${new Date().toISOString().slice(0,10)}.json`;
         const blob = new Blob([json], { type: 'application/json' });
+        const file = new File([blob], filename, { type: 'application/json' });
 
-        // Web Share API (Android/iOS native share sheet)
-        if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/json' })] })) {
+        // Intento 1: Web Share API con archivo (Android/iOS)
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
-                await navigator.share({ title: 'Copia Horas EMT', files: [new File([blob], filename, { type: 'application/json' })] });
+                await navigator.share({ title: 'Copia Horas EMT', files: [file] });
                 return;
             } catch(e) { if (e.name === 'AbortError') return; }
         }
 
-        // Fallback: download link
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = filename;
-        document.body.appendChild(a); a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        // Intento 2: Web Share API con texto (universal en móvil)
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: 'Copia Horas EMT', text: json });
+                return;
+            } catch(e) { if (e.name === 'AbortError') return; }
+        }
+
+        // Intento 3: descarga clásica (escritorio)
+        try {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+            return;
+        } catch(_) {}
+
+        // Intento 4: mostrar el JSON en pantalla para copiar manualmente
+        this._mostrarExportTexto(json);
+    },
+
+    _mostrarExportTexto(json) {
+        const uid = 'exp-' + Date.now();
+        const overlay = document.createElement('div');
+        overlay.id = uid + '-overlay';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+        overlay.innerHTML = `
+            <div style="background:var(--card);border-radius:16px;padding:20px;width:100%;max-width:480px;max-height:80vh;display:flex;flex-direction:column;gap:12px">
+                <div style="font-weight:700;font-size:16px">Copia de seguridad</div>
+                <div style="font-size:12px;color:var(--text-secondary)">Copia este texto y guárdalo en un archivo .json</div>
+                <textarea id="${uid}" readonly style="flex:1;min-height:200px;font-family:monospace;font-size:11px;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);resize:none"></textarea>
+                <div style="display:flex;gap:8px">
+                    <button id="${uid}-copy" style="flex:1;padding:10px;border-radius:8px;background:var(--primary);color:#fff;border:none;cursor:pointer">Copiar</button>
+                    <button onclick="document.getElementById('${uid}-overlay').remove()" style="flex:1;padding:10px;border-radius:8px;background:var(--border);border:none;cursor:pointer">Cerrar</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        document.getElementById(uid).value = json;
+        document.getElementById(uid + '-copy').onclick = () => {
+            navigator.clipboard.writeText(json).then(() => {
+                document.getElementById(uid + '-copy').textContent = '✅ Copiado';
+            });
+        };
     },
 
     async importarDatos() {

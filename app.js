@@ -1,7 +1,7 @@
 'use strict';
 
-const SUPABASE_URL = 'https://lrwttnwtgisxvmewgenp.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxyd3R0bnd0Z2lzeHZtZXdnZW5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzY1OTIsImV4cCI6MjA5MDcxMjU5Mn0.3wvAyIoSo6emhKZ33GoJVgOmocBF2OfWeb_QGpvQMw4';
+const SUPABASE_URL = 'https://iwgukzkcuduhjssjthig.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3Z3VremtjdWR1aGpzc2p0aGlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5MTgyMDYsImV4cCI6MjA5NDQ5NDIwNn0.oiZSPYMTNmtnTHt6Nv2YCVyGOhh9lyOGQWzQrehhy_w';
 const HORAS_ANUALES = 777;
 
 // Night hours window: 21:00 – 06:00

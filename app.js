@@ -309,8 +309,9 @@ const app = {
             if (saved) { email = saved; }
             else { this.mostrarMensaje('❌ Usuario no encontrado. Usa tu correo la primera vez.', 'error'); return; }
         }
+        this.mostrarMensaje('⏳ Entrando...', 'success');
         const { error } = await this.supabase.auth.signInWithPassword({ email, password });
-        if (error) { this.mostrarMensaje('❌ Correo/usuario o contraseña incorrectos', 'error'); }
+        if (error) { this.mostrarMensaje('❌ ' + error.message, 'error'); }
         else { document.getElementById('loginEmail').value = ''; document.getElementById('loginPassword').value = ''; }
     },
 
@@ -971,10 +972,24 @@ const app = {
         const historial = Object.entries((data?.historial) || {})
             .sort((a, b) => a[1].timestamp - b[1].timestamp)
             .map(([id, reg]) => ({ id, ...reg }));
+        const json = JSON.stringify({ exportado: new Date().toISOString(), usuario: this.usuarioActual.email, horasAnuales: this.horasAnualesCustom, horasTrabajadas: data?.horasTrabajadas||0, historial }, null, 2);
+        const filename = `horas-emt-${new Date().toISOString().slice(0,10)}.json`;
+        const blob = new Blob([json], { type: 'application/json' });
+
+        // Web Share API (Android/iOS native share sheet)
+        if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/json' })] })) {
+            try {
+                await navigator.share({ title: 'Copia Horas EMT', files: [new File([blob], filename, { type: 'application/json' })] });
+                return;
+            } catch(e) { if (e.name === 'AbortError') return; }
+        }
+
+        // Fallback: download link
+        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify({ exportado: new Date().toISOString(), usuario: this.usuarioActual.email, horasAnuales: this.horasAnualesCustom, horasTrabajadas: data?.horasTrabajadas||0, historial }, null, 2)], { type: 'application/json' }));
-        a.download = `horas-emt-${new Date().toISOString().slice(0,10)}.json`;
-        a.click(); URL.revokeObjectURL(a.href);
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
     },
 
     async importarDatos() {

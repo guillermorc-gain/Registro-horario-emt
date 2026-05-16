@@ -414,6 +414,7 @@ const app = {
         const horaInicio     = document.getElementById('horaInicio').value;
         const horaFin        = document.getElementById('horaFin').value;
         const esNoche        = document.getElementById('nocheToggle').checked;
+        const esPR           = document.getElementById('prToggle').checked;
         const horasNocturnas = esNoche ? (parseFloat(document.getElementById('horasNocturnas').value) || 0) : 0;
         const precioNoche    = esNoche ? (parseFloat(document.getElementById('precioNoche').value) || 0) : 0;
         const extraNoche     = Math.round(horasNocturnas * precioNoche * 100) / 100;
@@ -443,7 +444,8 @@ const app = {
             fecha: fechaFormato, horas,
             timestamp: new Date(fecha + 'T12:00:00').getTime(),
             ...(horaInicio && horaFin ? { horaInicio, horaFin } : {}),
-            ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {})
+            ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {}),
+            ...(esPR ? { pr: true } : {})
         };
 
         if (actual) {
@@ -467,6 +469,7 @@ const app = {
         const horaFin   = document.getElementById('editModalFin').value;
         const horasN    = parseFloat(document.getElementById('editModalNocturnas').value) || 0;
         const precioN   = parseFloat(document.getElementById('editModalPrecioN').value) || 0;
+        const esPR      = document.getElementById('editModalPR').checked;
 
         if (!fecha || isNaN(horas) || horas <= 0) { alert('❌ Introduce fecha y horas válidas'); return; }
 
@@ -490,7 +493,8 @@ const app = {
             fecha: fechaFormato, horas,
             timestamp: new Date(fecha + 'T12:00:00').getTime(),
             ...(horaInicio && horaFin ? { horaInicio, horaFin } : {}),
-            ...(horasN > 0 ? { horasNocturnas: horasN, precioNoche: precioN, extraNoche: Math.round(horasN * precioN * 100) / 100 } : {})
+            ...(horasN > 0 ? { horasNocturnas: horasN, precioNoche: precioN, extraNoche: Math.round(horasN * precioN * 100) / 100 } : {}),
+            ...(esPR ? { pr: true } : {})
         };
 
         await this.supabase.from('horas_trabajo').update(datos).eq('user_id', this.usuarioActual.id);
@@ -512,6 +516,7 @@ const app = {
         document.getElementById('editModalPrecioN').value  = reg.precioNoche    || '';
         document.getElementById('editModalExtraLabel').textContent =
             reg.horasNocturnas ? `+${(reg.extraNoche || 0).toFixed(2)}€ extra nocturno` : '';
+        document.getElementById('editModalPR').checked = !!reg.pr;
         document.getElementById('editModal').classList.add('show');
         if (this.darkMode) document.getElementById('editModalContent').classList.add('dark');
     },
@@ -543,6 +548,13 @@ const app = {
         const cb = document.getElementById('nocheToggle');
         cb.checked = !cb.checked;
         this.toggleNoche();
+    },
+
+    clickPrCompact() {
+        const cb  = document.getElementById('prToggle');
+        const btn = document.getElementById('prCompact');
+        cb.checked = !cb.checked;
+        btn.classList.toggle('active', cb.checked);
     },
 
     toggleNoche() {
@@ -607,6 +619,8 @@ const app = {
         document.getElementById('precioNoche').value    = '';
         document.getElementById('nocheResumen').textContent = '';
         document.getElementById('nocheToggle').checked = false;
+        document.getElementById('prToggle').checked = false;
+        document.getElementById('prCompact').classList.remove('active');
         if (lastInicio && lastFin) this.calcularHorasPorTiempo();
         else document.getElementById('horasInput').value = '';
     },
@@ -636,12 +650,14 @@ const app = {
             const horario = (reg.horaInicio && reg.horaFin)
                 ? `<span style="color:#95a5a6;font-size:10px;font-style:italic;">${reg.horaInicio}–${reg.horaFin}</span>`
                 : '';
+            const prBadge = reg.pr ? `<span class="pr-badge">PR</span>` : '';
             li.innerHTML = `
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                         <span style="color:#7f8c8d;font-weight:700;font-size:12px;">${reg.fecha}</span>
                         ${horario}
                         <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:3px 9px;border-radius:20px;font-weight:700;font-size:10px;">${reg.horas}h</span>
+                        ${prBadge}
                     </div>
                     ${nocheStr}
                 </div>

@@ -94,6 +94,14 @@
         .app-content.dark .noche-compact{background:#2a2500;border-color:#665500;}
         .noche-compact span{font-size:15px;line-height:1;}
         .noche-compact input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#f39c12;}
+        .pr-compact{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 8px;background:#e8f4fd;border-radius:8px;border:1.5px solid #3498db;cursor:pointer;flex-shrink:0;}
+        .pr-compact.active{background:#3498db;border-color:#2980b9;}
+        .pr-compact.active span{color:white;}
+        .app-content.dark .pr-compact{background:#0a1929;border-color:#2980b9;}
+        .app-content.dark .pr-compact.active{background:#2980b9;}
+        .pr-compact span{font-size:11px;font-weight:800;color:#2980b9;line-height:1;letter-spacing:0.5px;}
+        .pr-compact input[type=checkbox]{width:14px;height:14px;cursor:pointer;accent-color:#3498db;}
+        .pr-badge{display:inline-block;background:#3498db;color:white;font-size:9px;font-weight:800;padding:2px 6px;border-radius:10px;letter-spacing:0.5px;vertical-align:middle;}
         .noche-extra{display:none;margin-bottom:7px;padding:8px 9px;background:#fff8e1;border-radius:8px;border:1px solid #ffc107;}
         .noche-extra.visible{display:block;}
         .app-content.dark .noche-extra{background:#1a1500;border-color:#665500;}
@@ -361,6 +369,10 @@
                         <span>🌙</span>
                         <input type="checkbox" id="nocheToggle" onclick="event.stopPropagation();app.toggleNoche()">
                     </div>
+                    <div class="pr-compact" id="prCompact" onclick="app.clickPrCompact()" title="Prolongación de Ruta">
+                        <span>PR</span>
+                        <input type="checkbox" id="prToggle" onclick="event.stopPropagation();app.clickPrCompact()">
+                    </div>
                 </div>
                 <div class="noche-extra" id="nocheExtra">
                     <div class="input-row" style="margin-bottom:0;">
@@ -576,6 +588,10 @@
                 </div>
             </div>
             <div class="extra-label" id="editModalExtraLabel"></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                <input type="checkbox" id="editModalPR" style="width:16px;height:16px;accent-color:#3498db;cursor:pointer;">
+                <label for="editModalPR" style="font-size:13px;font-weight:600;color:#2980b9;cursor:pointer;">PR — Prolongación de Ruta</label>
+            </div>
         </div>
         <div class="modal-footer">
             <button class="modal-btn modal-btn-cancel" onclick="document.getElementById('editModal').classList.remove('show')">Cancelar</button>

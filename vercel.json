@@ -1,5 +1,4 @@
 {
-  "toolbar": { "status": "disabled" },
   "headers": [
     {
       "source": "/manifest.json",

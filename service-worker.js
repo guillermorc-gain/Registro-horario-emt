@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horas-v10';
+const CACHE_NAME = 'horas-v11';
 const BASE_PATH = '/';
 
 // These files are always fetched from network (never stale)
@@ -37,9 +37,9 @@ self.addEventListener('fetch', event => {
   const isNetworkFirst = NETWORK_FIRST.some(p => url.pathname === p || url.pathname === p.replace(BASE_PATH, '/'));
 
   if (isNetworkFirst) {
-    // Network first: always try to get fresh version, fall back to cache
+    // Network first: bypass HTTP cache to always get the latest version
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then(res => res)
         .catch(() => caches.match(event.request).then(r => r || caches.match(BASE_PATH + 'index.html')))
     );

@@ -72,13 +72,19 @@ const app = {
 
     async setupAuth() {
         // Listen for auth changes first so we don't miss events
-        this.supabase.auth.onAuthStateChange((event, session) => {
+        this.supabase.auth.onAuthStateChange(async (event, session) => {
             if (session) {
                 this._aplicarSesion(session.user);
             } else if (event === 'SIGNED_OUT') {
-                // Only redirect to auth on explicit sign-out
-                this.usuarioActual = null;
-                this.mostrarAuth();
+                // Before giving up, attempt one silent refresh
+                // (handles cases where token expired while app was in background)
+                const { data: { session: recovered } } = await this.supabase.auth.getSession().catch(() => ({ data: {} }));
+                if (recovered) {
+                    this._aplicarSesion(recovered.user);
+                } else {
+                    this.usuarioActual = null;
+                    this.mostrarAuth();
+                }
             }
         });
 
@@ -341,7 +347,6 @@ const app = {
         const { data, error } = await this.supabase.auth.signUp({ email, password: pw1 });
         if (error) { this.mostrarMensaje('❌ ' + error.message, 'error'); }
         else if (data?.session) {
-            // Auto-confirmed (email confirmation disabled in Supabase)
             this.mostrarMensaje('✅ Cuenta creada. Entrando...', 'success');
             setTimeout(() => {
                 document.getElementById('registerEmail').value = '';
@@ -349,7 +354,6 @@ const app = {
                 document.getElementById('registerPassword2').value = '';
             }, 1000);
         } else {
-            // Email confirmation required
             this.mostrarMensaje('📧 Revisa tu email y confirma tu cuenta antes de iniciar sesión.', 'success');
             setTimeout(() => {
                 document.getElementById('registerEmail').value = '';
@@ -528,7 +532,6 @@ const app = {
             await this.supabase.from('horas_trabajo').update(data).eq('user_id', this.usuarioActual.id);
             this.actualizarUI(data);
             if (this.editingId === id) this.editingId = null;
-            // Refresh historial modal if open
             if (document.getElementById('historialModal').classList.contains('show')) {
                 this._renderHistorialModal();
             }
@@ -698,7 +701,6 @@ const app = {
         document.getElementById('progressFill').style.width    = Math.min(pct, 100) + '%';
         if (pct >= 100) document.getElementById('progressFill').style.background = 'linear-gradient(90deg,#27ae60,#229954)';
 
-        // Monthly stats cards
         const ahora = new Date();
         const mesStats = this._calcMesStats(this._historialFull, ahora.getFullYear(), ahora.getMonth() + 1);
         const elMesH = document.getElementById('statMesHoras');
@@ -706,17 +708,13 @@ const app = {
         if (elMesH) elMesH.textContent = mesStats.horas.toFixed(1);
         if (elMesN) elMesN.textContent = mesStats.nocturnas.toFixed(1);
 
-        // Monthly breakdown table
         this._renderMensual(this._historialFull);
-
-        // Historial map for edit/delete
         this.actualizarHistorial(datos.historial || {});
     },
 
     actualizarHistorial(historial) {
         this._historialMap = {};
         Object.entries(historial).forEach(([id, reg]) => { this._historialMap[id] = reg; });
-        // Count badge
         const count = Object.keys(historial).length;
         const badge = document.getElementById('historialCount');
         if (badge) badge.textContent = count > 0 ? `${count} registros` : 'Sin registros';
@@ -1001,7 +999,6 @@ const app = {
         const blob = new Blob([json], { type: 'application/json' });
         const file = new File([blob], filename, { type: 'application/json' });
 
-        // Intento 1: Web Share API con archivo (Android/iOS)
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({ title: 'Copia Horas EMT', files: [file] });
@@ -1009,7 +1006,6 @@ const app = {
             } catch(e) { if (e.name === 'AbortError') return; }
         }
 
-        // Intento 2: Web Share API con texto (universal en móvil)
         if (navigator.share) {
             try {
                 await navigator.share({ title: 'Copia Horas EMT', text: json });
@@ -1017,7 +1013,6 @@ const app = {
             } catch(e) { if (e.name === 'AbortError') return; }
         }
 
-        // Intento 3: descarga clásica (escritorio)
         try {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1027,7 +1022,6 @@ const app = {
             return;
         } catch(_) {}
 
-        // Intento 4: mostrar el JSON en pantalla para copiar manualmente
         this._mostrarExportTexto(json);
     },
 

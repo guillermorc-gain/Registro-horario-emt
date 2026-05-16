@@ -77,14 +77,6 @@ const app = {
     },
 
     async setupAuth() {
-        // In Supabase v2, INITIAL_SESSION fires once the stored session has been
-        // validated (and refreshed if needed). It is the authoritative signal for
-        // the initial auth state — using it avoids showing the login screen while
-        // a token refresh is still in flight.
-        //
-        // Guard: if SIGNED_IN fires before INITIAL_SESSION (can happen in PWA
-        // standalone mode due to async timing), don't let the later INITIAL_SESSION
-        // with null override the already-established session.
         this.supabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 this._aplicarSesion(session.user);
@@ -92,7 +84,6 @@ const app = {
                 this.usuarioActual = null;
                 this.mostrarAuth();
             } else if (event === 'INITIAL_SESSION') {
-                // Only show auth if no session has been established yet
                 if (!this.usuarioActual) this.mostrarAuth();
             }
         });

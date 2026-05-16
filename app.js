@@ -71,30 +71,18 @@ const app = {
     },
 
     async setupAuth() {
-        // Listen for auth changes first so we don't miss events
-        this.supabase.auth.onAuthStateChange(async (event, session) => {
+        // In Supabase v2, INITIAL_SESSION fires once the stored session has been
+        // validated (and refreshed if needed). It is the authoritative signal for
+        // the initial auth state — using it avoids showing the login screen while
+        // a token refresh is still in flight.
+        this.supabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 this._aplicarSesion(session.user);
-            } else if (event === 'SIGNED_OUT') {
-                // Before giving up, attempt one silent refresh
-                // (handles cases where token expired while app was in background)
-                const { data: { session: recovered } } = await this.supabase.auth.getSession().catch(() => ({ data: {} }));
-                if (recovered) {
-                    this._aplicarSesion(recovered.user);
-                } else {
-                    this.usuarioActual = null;
-                    this.mostrarAuth();
-                }
+            } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
+                this.usuarioActual = null;
+                this.mostrarAuth();
             }
         });
-
-        // Then check for an existing/refreshable session
-        const { data: { session: existing } } = await this.supabase.auth.getSession();
-        if (existing) {
-            this._aplicarSesion(existing.user);
-        } else if (!this.usuarioActual) {
-            this.mostrarAuth();
-        }
     },
 
     setupUI() {
@@ -1052,8 +1040,12 @@ const app = {
     async importarDatos() {
         if (!this.usuarioActual) return;
         const input = document.createElement('input');
-        input.type = 'file'; input.accept = '.json,application/json';
-        input.onchange = async (e) => {
+        input.type = 'file';
+        input.accept = '.json,application/json';
+        input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0;';
+        document.body.appendChild(input);
+        input.addEventListener('change', async (e) => {
+            document.body.removeChild(input);
             const file = e.target.files[0]; if (!file) return;
             try {
                 const datos = JSON.parse(await file.text());
@@ -1071,7 +1063,7 @@ const app = {
                 this.actualizarUI(restored);
                 alert('✅ Copia restaurada correctamente');
             } catch(err) { alert('❌ Error al leer el archivo: ' + err.message); }
-        };
+        });
         input.click();
     }
 };

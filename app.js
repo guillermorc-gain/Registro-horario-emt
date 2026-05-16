@@ -71,14 +71,19 @@ const app = {
     },
 
     async setupAuth() {
-        // Listen for auth changes first so we don't miss events
-        this.supabase.auth.onAuthStateChange((event, session) => {
+        this.supabase.auth.onAuthStateChange(async (event, session) => {
             if (session) {
                 this._aplicarSesion(session.user);
             } else if (event === 'SIGNED_OUT') {
-                // Only redirect to auth on explicit sign-out
-                this.usuarioActual = null;
-                this.mostrarAuth();
+                // Before giving up, attempt one silent refresh
+                // (handles cases where token expired while app was in background)
+                const { data: { session: recovered } } = await this.supabase.auth.getSession().catch(() => ({ data: {} }));
+                if (recovered) {
+                    this._aplicarSesion(recovered.user);
+                } else {
+                    this.usuarioActual = null;
+                    this.mostrarAuth();
+                }
             }
         });
 

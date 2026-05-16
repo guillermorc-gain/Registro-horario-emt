@@ -55,6 +55,12 @@ const app = {
         }
         if (meta.avatar_emoji) localStorage.setItem('avatarEmoji', meta.avatar_emoji);
         if (meta.avatar_bg)    localStorage.setItem('avatarBg', meta.avatar_bg);
+        // Restore dark mode from Supabase so it survives device changes / PWA reinstalls
+        if (meta.dark_mode !== undefined) {
+            this.darkMode = !!meta.dark_mode;
+            localStorage.setItem('darkMode', this.darkMode);
+            this.darkMode ? this.aplicarDarkMode() : this.removerDarkMode();
+        }
         this.mostrarApp();
         this.cargarDatos();
         this.actualizarBotonesPerfil();
@@ -205,6 +211,9 @@ const app = {
         document.getElementById('avatarPickerModal').classList.remove('show');
         this.actualizarBotonesPerfil();
         this._actualizarAvatarPreview();
+        if (this.usuarioActual) {
+            this.supabase.auth.updateUser({ data: { avatar_emoji: emoji, avatar_bg: bg } }).catch(() => {});
+        }
     },
 
     mostrarAvatarPicker() {
@@ -776,6 +785,9 @@ const app = {
         this.darkMode = !this.darkMode;
         localStorage.setItem('darkMode', this.darkMode);
         this.darkMode ? this.aplicarDarkMode() : this.removerDarkMode();
+        if (this.usuarioActual) {
+            this.supabase.auth.updateUser({ data: { dark_mode: this.darkMode } }).catch(() => {});
+        }
     },
 
     aplicarDarkMode() {

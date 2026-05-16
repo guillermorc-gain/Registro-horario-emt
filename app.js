@@ -58,6 +58,16 @@ const app = {
         this.mostrarApp();
         this.cargarDatos();
         this.actualizarBotonesPerfil();
+        // Recalculate after screen is shown, in case saved times are already loaded
+        setTimeout(() => this._autoRellenarFormulario(), 50);
+    },
+
+    _autoRellenarFormulario() {
+        const inicio = localStorage.getItem('lastHoraInicio');
+        const fin    = localStorage.getItem('lastHoraFin');
+        if (inicio) document.getElementById('horaInicio').value = inicio;
+        if (fin)    document.getElementById('horaFin').value    = fin;
+        if (inicio && fin) this.calcularHorasPorTiempo();
     },
 
     async setupAuth() {

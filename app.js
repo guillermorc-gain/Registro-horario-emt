@@ -1062,9 +1062,11 @@ const app = {
                 if (Array.isArray(datos.historial)) datos.historial.forEach(({ id, ...rest }) => { historialObj[id] = rest; });
                 else Object.assign(historialObj, datos.historial);
                 const restored = { horasTrabajadas: datos.horasTrabajadas, historial: historialObj };
-                const { data: exRows } = await this.supabase.from('horas_trabajo').select('id').eq('user_id', this.usuarioActual.id).limit(1);
-                if (exRows && exRows.length > 0) await this.supabase.from('horas_trabajo').update(restored).eq('user_id', this.usuarioActual.id);
-                else    await this.supabase.from('horas_trabajo').insert([{ user_id: this.usuarioActual.id, ...restored }]);
+                const { error } = await this.supabase.from('horas_trabajo').upsert(
+                    { user_id: this.usuarioActual.id, ...restored },
+                    { onConflict: 'user_id' }
+                );
+                if (error) { alert('❌ Error al guardar en la nube: ' + error.message); return; }
                 if (datos.horasAnuales) { this.horasAnualesCustom = datos.horasAnuales; localStorage.setItem('horasAnuales', datos.horasAnuales); }
                 this.actualizarUI(restored);
                 alert('✅ Copia restaurada correctamente');

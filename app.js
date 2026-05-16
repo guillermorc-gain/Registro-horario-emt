@@ -554,6 +554,7 @@ const app = {
     clickPrCompact() {
         this.prActivo = !this.prActivo;
         document.getElementById('prCompact').classList.toggle('active', this.prActivo);
+        document.getElementById('prToggle').checked = this.prActivo;
     },
 
     toggleNoche() {
@@ -620,6 +621,7 @@ const app = {
         document.getElementById('nocheToggle').checked = false;
         this.prActivo = false;
         document.getElementById('prCompact').classList.remove('active');
+        document.getElementById('prToggle').checked = false;
         if (lastInicio && lastFin) this.calcularHorasPorTiempo();
         else document.getElementById('horasInput').value = '';
     },

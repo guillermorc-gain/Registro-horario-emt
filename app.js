@@ -396,9 +396,11 @@ const app = {
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         if (error) {
             console.error('Error cargando datos Supabase:', error.message);
-            this.mostrarMensaje('⚠️ Sin conexión — mostrando datos locales', 'error');
+            this.mostrarMensaje('⚠️ Error al cargar datos: ' + error.message, 'error');
         }
-        const data = rows && rows.length > 0 ? rows[0] : null;
+        const raw = rows && rows.length > 0 ? rows[0] : null;
+        // PostgREST returns PostgreSQL numeric columns as strings — normalise to number
+        const data = raw ? { ...raw, horasTrabajadas: parseFloat(raw.horasTrabajadas) || 0 } : null;
         this.actualizarUI(data || { horasTrabajadas: 0, historial: {} });
         this.verificarUbicacion();
     },
@@ -420,7 +422,9 @@ const app = {
         const { data: _rows } = await this.supabase
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         const actual = _rows?.[0] ?? null;
-        const datos = actual || { horasTrabajadas: 0, historial: {} };
+        const datos = actual
+            ? { ...actual, horasTrabajadas: parseFloat(actual.horasTrabajadas) || 0 }
+            : { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
         if (this.editingId && datos.historial[this.editingId]) {
@@ -469,7 +473,9 @@ const app = {
         const { data: _rows } = await this.supabase
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         const actual = _rows?.[0] ?? null;
-        const datos = actual || { horasTrabajadas: 0, historial: {} };
+        const datos = actual
+            ? { ...actual, horasTrabajadas: parseFloat(actual.horasTrabajadas) || 0 }
+            : { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
         if (datos.historial[this.editingId]) {
@@ -686,11 +692,12 @@ const app = {
     // ── UI ────────────────────────────────────────────────────────
 
     actualizarUI(datos) {
-        const restantes = Math.max(0, this.horasAnualesCustom - datos.horasTrabajadas);
-        const pct       = (datos.horasTrabajadas / this.horasAnualesCustom) * 100;
+        const horas     = parseFloat(datos.horasTrabajadas) || 0;
+        const restantes = Math.max(0, this.horasAnualesCustom - horas);
+        const pct       = (horas / this.horasAnualesCustom) * 100;
         this._historialFull = datos.historial || {};
 
-        document.getElementById('horasTrabajadas').textContent = datos.horasTrabajadas.toFixed(1);
+        document.getElementById('horasTrabajadas').textContent = horas.toFixed(1);
         document.getElementById('horasRestantes').textContent  = restantes.toFixed(1);
         document.getElementById('porcentaje').textContent = Math.min(Math.round(pct), 100);
         document.getElementById('progressFill').style.width    = Math.min(pct, 100) + '%';

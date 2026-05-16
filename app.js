@@ -55,6 +55,12 @@ const app = {
         }
         if (meta.avatar_emoji) localStorage.setItem('avatarEmoji', meta.avatar_emoji);
         if (meta.avatar_bg)    localStorage.setItem('avatarBg', meta.avatar_bg);
+        // Restore dark mode from Supabase so it survives device changes / PWA reinstalls
+        if (meta.dark_mode !== undefined) {
+            this.darkMode = !!meta.dark_mode;
+            localStorage.setItem('darkMode', this.darkMode);
+            this.darkMode ? this.aplicarDarkMode() : this.removerDarkMode();
+        }
         this.mostrarApp();
         this.cargarDatos();
         this.actualizarBotonesPerfil();
@@ -71,29 +77,16 @@ const app = {
     },
 
     async setupAuth() {
-        this.supabase.auth.onAuthStateChange(async (event, session) => {
+        this.supabase.auth.onAuthStateChange((event, session) => {
             if (session) {
                 this._aplicarSesion(session.user);
             } else if (event === 'SIGNED_OUT') {
-                // Before giving up, attempt one silent refresh
-                // (handles cases where token expired while app was in background)
-                const { data: { session: recovered } } = await this.supabase.auth.getSession().catch(() => ({ data: {} }));
-                if (recovered) {
-                    this._aplicarSesion(recovered.user);
-                } else {
-                    this.usuarioActual = null;
-                    this.mostrarAuth();
-                }
+                this.usuarioActual = null;
+                this.mostrarAuth();
+            } else if (event === 'INITIAL_SESSION') {
+                if (!this.usuarioActual) this.mostrarAuth();
             }
         });
-
-        // Then check for an existing/refreshable session
-        const { data: { session: existing } } = await this.supabase.auth.getSession();
-        if (existing) {
-            this._aplicarSesion(existing.user);
-        } else if (!this.usuarioActual) {
-            this.mostrarAuth();
-        }
     },
 
     setupUI() {
@@ -209,6 +202,9 @@ const app = {
         document.getElementById('avatarPickerModal').classList.remove('show');
         this.actualizarBotonesPerfil();
         this._actualizarAvatarPreview();
+        if (this.usuarioActual) {
+            this.supabase.auth.updateUser({ data: { avatar_emoji: emoji, avatar_bg: bg } }).catch(() => {});
+        }
     },
 
     mostrarAvatarPicker() {
@@ -346,7 +342,6 @@ const app = {
         const { data, error } = await this.supabase.auth.signUp({ email, password: pw1 });
         if (error) { this.mostrarMensaje('❌ ' + error.message, 'error'); }
         else if (data?.session) {
-            // Auto-confirmed (email confirmation disabled in Supabase)
             this.mostrarMensaje('✅ Cuenta creada. Entrando...', 'success');
             setTimeout(() => {
                 document.getElementById('registerEmail').value = '';
@@ -354,7 +349,6 @@ const app = {
                 document.getElementById('registerPassword2').value = '';
             }, 1000);
         } else {
-            // Email confirmation required
             this.mostrarMensaje('📧 Revisa tu email y confirma tu cuenta antes de iniciar sesión.', 'success');
             setTimeout(() => {
                 document.getElementById('registerEmail').value = '';
@@ -402,9 +396,11 @@ const app = {
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         if (error) {
             console.error('Error cargando datos Supabase:', error.message);
-            this.mostrarMensaje('⚠️ Sin conexión — mostrando datos locales', 'error');
+            this.mostrarMensaje('⚠️ Error al cargar datos: ' + error.message, 'error');
         }
-        const data = rows && rows.length > 0 ? rows[0] : null;
+        const raw = rows && rows.length > 0 ? rows[0] : null;
+        // PostgREST returns PostgreSQL numeric columns as strings — normalise to number
+        const data = raw ? { ...raw, horasTrabajadas: parseFloat(raw.horasTrabajadas) || 0 } : null;
         this.actualizarUI(data || { horasTrabajadas: 0, historial: {} });
         this.verificarUbicacion();
     },
@@ -418,6 +414,7 @@ const app = {
         const horaInicio     = document.getElementById('horaInicio').value;
         const horaFin        = document.getElementById('horaFin').value;
         const esNoche        = document.getElementById('nocheToggle').checked;
+        const esPR           = document.getElementById('prToggle').checked;
         const horasNocturnas = esNoche ? (parseFloat(document.getElementById('horasNocturnas').value) || 0) : 0;
         const precioNoche    = esNoche ? (parseFloat(document.getElementById('precioNoche').value) || 0) : 0;
         const extraNoche     = Math.round(horasNocturnas * precioNoche * 100) / 100;
@@ -426,7 +423,9 @@ const app = {
         const { data: _rows } = await this.supabase
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         const actual = _rows?.[0] ?? null;
-        const datos = actual || { horasTrabajadas: 0, historial: {} };
+        const datos = actual
+            ? { ...actual, horasTrabajadas: parseFloat(actual.horasTrabajadas) || 0 }
+            : { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
         if (this.editingId && datos.historial[this.editingId]) {
@@ -445,7 +444,8 @@ const app = {
             fecha: fechaFormato, horas,
             timestamp: new Date(fecha + 'T12:00:00').getTime(),
             ...(horaInicio && horaFin ? { horaInicio, horaFin } : {}),
-            ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {})
+            ...(esNoche && horasNocturnas > 0 ? { horasNocturnas, precioNoche, extraNoche } : {}),
+            ...(esPR ? { pr: true } : {})
         };
 
         if (actual) {
@@ -469,13 +469,16 @@ const app = {
         const horaFin   = document.getElementById('editModalFin').value;
         const horasN    = parseFloat(document.getElementById('editModalNocturnas').value) || 0;
         const precioN   = parseFloat(document.getElementById('editModalPrecioN').value) || 0;
+        const esPR      = document.getElementById('editModalPR').checked;
 
         if (!fecha || isNaN(horas) || horas <= 0) { alert('❌ Introduce fecha y horas válidas'); return; }
 
         const { data: _rows } = await this.supabase
             .from('horas_trabajo').select('*').eq('user_id', this.usuarioActual.id).limit(1);
         const actual = _rows?.[0] ?? null;
-        const datos = actual || { horasTrabajadas: 0, historial: {} };
+        const datos = actual
+            ? { ...actual, horasTrabajadas: parseFloat(actual.horasTrabajadas) || 0 }
+            : { horasTrabajadas: 0, historial: {} };
         if (!datos.historial) datos.historial = {};
 
         if (datos.historial[this.editingId]) {
@@ -490,7 +493,8 @@ const app = {
             fecha: fechaFormato, horas,
             timestamp: new Date(fecha + 'T12:00:00').getTime(),
             ...(horaInicio && horaFin ? { horaInicio, horaFin } : {}),
-            ...(horasN > 0 ? { horasNocturnas: horasN, precioNoche: precioN, extraNoche: Math.round(horasN * precioN * 100) / 100 } : {})
+            ...(horasN > 0 ? { horasNocturnas: horasN, precioNoche: precioN, extraNoche: Math.round(horasN * precioN * 100) / 100 } : {}),
+            ...(esPR ? { pr: true } : {})
         };
 
         await this.supabase.from('horas_trabajo').update(datos).eq('user_id', this.usuarioActual.id);
@@ -512,6 +516,7 @@ const app = {
         document.getElementById('editModalPrecioN').value  = reg.precioNoche    || '';
         document.getElementById('editModalExtraLabel').textContent =
             reg.horasNocturnas ? `+${(reg.extraNoche || 0).toFixed(2)}€ extra nocturno` : '';
+        document.getElementById('editModalPR').checked = !!reg.pr;
         document.getElementById('editModal').classList.add('show');
         if (this.darkMode) document.getElementById('editModalContent').classList.add('dark');
     },
@@ -533,7 +538,6 @@ const app = {
             await this.supabase.from('horas_trabajo').update(data).eq('user_id', this.usuarioActual.id);
             this.actualizarUI(data);
             if (this.editingId === id) this.editingId = null;
-            // Refresh historial modal if open
             if (document.getElementById('historialModal').classList.contains('show')) {
                 this._renderHistorialModal();
             }
@@ -544,6 +548,13 @@ const app = {
         const cb = document.getElementById('nocheToggle');
         cb.checked = !cb.checked;
         this.toggleNoche();
+    },
+
+    clickPrCompact() {
+        const cb  = document.getElementById('prToggle');
+        const btn = document.getElementById('prCompact');
+        cb.checked = !cb.checked;
+        btn.classList.toggle('active', cb.checked);
     },
 
     toggleNoche() {
@@ -608,6 +619,8 @@ const app = {
         document.getElementById('precioNoche').value    = '';
         document.getElementById('nocheResumen').textContent = '';
         document.getElementById('nocheToggle').checked = false;
+        document.getElementById('prToggle').checked = false;
+        document.getElementById('prCompact').classList.remove('active');
         if (lastInicio && lastFin) this.calcularHorasPorTiempo();
         else document.getElementById('horasInput').value = '';
     },
@@ -637,12 +650,14 @@ const app = {
             const horario = (reg.horaInicio && reg.horaFin)
                 ? `<span style="color:#95a5a6;font-size:10px;font-style:italic;">${reg.horaInicio}–${reg.horaFin}</span>`
                 : '';
+            const prBadge = reg.pr ? `<span class="pr-badge">PR</span>` : '';
             li.innerHTML = `
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                         <span style="color:#7f8c8d;font-weight:700;font-size:12px;">${reg.fecha}</span>
                         ${horario}
                         <span style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;padding:3px 9px;border-radius:20px;font-weight:700;font-size:10px;">${reg.horas}h</span>
+                        ${prBadge}
                     </div>
                     ${nocheStr}
                 </div>
@@ -693,17 +708,17 @@ const app = {
     // ── UI ────────────────────────────────────────────────────────
 
     actualizarUI(datos) {
-        const restantes = Math.max(0, this.horasAnualesCustom - datos.horasTrabajadas);
-        const pct       = (datos.horasTrabajadas / this.horasAnualesCustom) * 100;
+        const horas     = parseFloat(datos.horasTrabajadas) || 0;
+        const restantes = Math.max(0, this.horasAnualesCustom - horas);
+        const pct       = (horas / this.horasAnualesCustom) * 100;
         this._historialFull = datos.historial || {};
 
-        document.getElementById('horasTrabajadas').textContent = datos.horasTrabajadas.toFixed(1);
+        document.getElementById('horasTrabajadas').textContent = horas.toFixed(1);
         document.getElementById('horasRestantes').textContent  = restantes.toFixed(1);
         document.getElementById('porcentaje').textContent = Math.min(Math.round(pct), 100);
         document.getElementById('progressFill').style.width    = Math.min(pct, 100) + '%';
         if (pct >= 100) document.getElementById('progressFill').style.background = 'linear-gradient(90deg,#27ae60,#229954)';
 
-        // Monthly stats cards
         const ahora = new Date();
         const mesStats = this._calcMesStats(this._historialFull, ahora.getFullYear(), ahora.getMonth() + 1);
         const elMesH = document.getElementById('statMesHoras');
@@ -711,17 +726,13 @@ const app = {
         if (elMesH) elMesH.textContent = mesStats.horas.toFixed(1);
         if (elMesN) elMesN.textContent = mesStats.nocturnas.toFixed(1);
 
-        // Monthly breakdown table
         this._renderMensual(this._historialFull);
-
-        // Historial map for edit/delete
         this.actualizarHistorial(datos.historial || {});
     },
 
     actualizarHistorial(historial) {
         this._historialMap = {};
         Object.entries(historial).forEach(([id, reg]) => { this._historialMap[id] = reg; });
-        // Count badge
         const count = Object.keys(historial).length;
         const badge = document.getElementById('historialCount');
         if (badge) badge.textContent = count > 0 ? `${count} registros` : 'Sin registros';
@@ -765,6 +776,9 @@ const app = {
         this.darkMode = !this.darkMode;
         localStorage.setItem('darkMode', this.darkMode);
         this.darkMode ? this.aplicarDarkMode() : this.removerDarkMode();
+        if (this.usuarioActual) {
+            this.supabase.auth.updateUser({ data: { dark_mode: this.darkMode } }).catch(() => {});
+        }
     },
 
     aplicarDarkMode() {
@@ -1006,7 +1020,6 @@ const app = {
         const blob = new Blob([json], { type: 'application/json' });
         const file = new File([blob], filename, { type: 'application/json' });
 
-        // Intento 1: Web Share API con archivo (Android/iOS)
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({ title: 'Copia Horas EMT', files: [file] });
@@ -1014,7 +1027,6 @@ const app = {
             } catch(e) { if (e.name === 'AbortError') return; }
         }
 
-        // Intento 2: Web Share API con texto (universal en móvil)
         if (navigator.share) {
             try {
                 await navigator.share({ title: 'Copia Horas EMT', text: json });
@@ -1022,7 +1034,6 @@ const app = {
             } catch(e) { if (e.name === 'AbortError') return; }
         }
 
-        // Intento 3: descarga clásica (escritorio)
         try {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1032,7 +1043,6 @@ const app = {
             return;
         } catch(_) {}
 
-        // Intento 4: mostrar el JSON en pantalla para copiar manualmente
         this._mostrarExportTexto(json);
     },
 
@@ -1063,8 +1073,12 @@ const app = {
     async importarDatos() {
         if (!this.usuarioActual) return;
         const input = document.createElement('input');
-        input.type = 'file'; input.accept = '.json,application/json';
-        input.onchange = async (e) => {
+        input.type = 'file';
+        input.accept = '.json,application/json';
+        input.style.cssText = 'position:fixed;top:-100px;left:-100px;opacity:0;';
+        document.body.appendChild(input);
+        input.addEventListener('change', async (e) => {
+            document.body.removeChild(input);
             const file = e.target.files[0]; if (!file) return;
             try {
                 const datos = JSON.parse(await file.text());
@@ -1073,14 +1087,16 @@ const app = {
                 if (Array.isArray(datos.historial)) datos.historial.forEach(({ id, ...rest }) => { historialObj[id] = rest; });
                 else Object.assign(historialObj, datos.historial);
                 const restored = { horasTrabajadas: datos.horasTrabajadas, historial: historialObj };
-                const { data: exRows } = await this.supabase.from('horas_trabajo').select('id').eq('user_id', this.usuarioActual.id).limit(1);
-                if (exRows && exRows.length > 0) await this.supabase.from('horas_trabajo').update(restored).eq('user_id', this.usuarioActual.id);
-                else    await this.supabase.from('horas_trabajo').insert([{ user_id: this.usuarioActual.id, ...restored }]);
+                const { error } = await this.supabase.from('horas_trabajo').upsert(
+                    { user_id: this.usuarioActual.id, ...restored },
+                    { onConflict: 'user_id' }
+                );
+                if (error) { alert('❌ Error al guardar en la nube: ' + error.message); return; }
                 if (datos.horasAnuales) { this.horasAnualesCustom = datos.horasAnuales; localStorage.setItem('horasAnuales', datos.horasAnuales); }
                 this.actualizarUI(restored);
                 alert('✅ Copia restaurada correctamente');
             } catch(err) { alert('❌ Error al leer el archivo: ' + err.message); }
-        };
+        });
         input.click();
     }
 };

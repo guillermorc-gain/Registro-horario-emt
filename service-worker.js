@@ -1,4 +1,4 @@
-const CACHE_NAME = 'horas-v10';
+const CACHE_NAME = 'horas-v15';
 const BASE_PATH = '/';
 
 // These files are always fetched from network (never stale)
@@ -34,21 +34,25 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  const isNetworkFirst = NETWORK_FIRST.some(p => url.pathname === p || url.pathname === p.replace(BASE_PATH, '/'));
+
+  // Only handle same-origin GET requests — let the browser handle cross-origin
+  // requests (Supabase API, CDN scripts) natively so auth headers and CORS work
+  // correctly and we never accidentally return index.html for an API call.
+  if (url.origin !== self.location.origin || event.request.method !== 'GET') return;
+
+  const isNetworkFirst = NETWORK_FIRST.some(p => url.pathname === p);
 
   if (isNetworkFirst) {
-    // Network first: always try to get fresh version, fall back to cache
+    // Bypass HTTP cache so we always get the latest version of app.js / index.html
     event.respondWith(
-      fetch(event.request)
-        .then(res => res)
-        .catch(() => caches.match(event.request).then(r => r || caches.match(BASE_PATH + 'index.html')))
+      fetch(event.request, { cache: 'no-cache' })
+        .catch(() => caches.match(event.request))
     );
   } else {
-    // Cache first: serve from cache, fall back to network
+    // Cache first for static assets (icons, manifest)
     event.respondWith(
       caches.match(event.request)
         .then(response => response || fetch(event.request))
-        .catch(() => caches.match(BASE_PATH + 'index.html'))
     );
   }
 });
